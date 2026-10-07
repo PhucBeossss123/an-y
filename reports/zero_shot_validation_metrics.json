@@ -1,0 +1,147 @@
+[
+  {
+    "method": "zero_shot",
+    "prompt_id": "explicit_negation",
+    "split": "provisional_validation_seed_42",
+    "checkpoint": "cross-encoder/nli-deberta-v3-small",
+    "candidate_labels": [
+      "sarcastic",
+      "not sarcastic"
+    ],
+    "hypothesis_template": "The author is being {}.",
+    "score_semantics": "mutually exclusive NLI scores normalized over the two candidate labels; not calibrated probabilities",
+    "n": 694,
+    "macro_f1": 0.5487837948215306,
+    "f1_sarcastic": 0.27636363636363637,
+    "precision_sincere": 0.7719594594594594,
+    "recall_sincere": 0.8771593090211133,
+    "precision_sarcastic": 0.37254901960784315,
+    "recall_sarcastic": 0.21965317919075145,
+    "confusion_matrix_labels_0_1": [
+      [
+        457,
+        64
+      ],
+      [
+        135,
+        38
+      ]
+    ]
+  },
+  {
+    "method": "zero_shot",
+    "prompt_id": "social_post",
+    "split": "provisional_validation_seed_42",
+    "checkpoint": "cross-encoder/nli-deberta-v3-small",
+    "candidate_labels": [
+      "a sarcastic social media post",
+      "a sincere social media post"
+    ],
+    "hypothesis_template": "This is {}.",
+    "score_semantics": "mutually exclusive NLI scores normalized over the two candidate labels; not calibrated probabilities",
+    "n": 694,
+    "macro_f1": 0.5016044725239762,
+    "f1_sarcastic": 0.3551020408163265,
+    "precision_sincere": 0.7718832891246684,
+    "recall_sincere": 0.5585412667946257,
+    "precision_sarcastic": 0.2744479495268139,
+    "recall_sarcastic": 0.5028901734104047,
+    "confusion_matrix_labels_0_1": [
+      [
+        291,
+        230
+      ],
+      [
+        86,
+        87
+      ]
+    ]
+  },
+  {
+    "method": "zero_shot",
+    "prompt_id": "statement",
+    "split": "provisional_validation_seed_42",
+    "checkpoint": "cross-encoder/nli-deberta-v3-small",
+    "candidate_labels": [
+      "sarcastic statement",
+      "sincere statement"
+    ],
+    "hypothesis_template": "The author intended this as a {}.",
+    "score_semantics": "mutually exclusive NLI scores normalized over the two candidate labels; not calibrated probabilities",
+    "n": 694,
+    "macro_f1": 0.49955858071907533,
+    "f1_sarcastic": 0.36182902584493043,
+    "precision_sincere": 0.7747252747252747,
+    "recall_sincere": 0.5412667946257198,
+    "precision_sarcastic": 0.27575757575757576,
+    "recall_sarcastic": 0.5260115606936416,
+    "confusion_matrix_labels_0_1": [
+      [
+        282,
+        239
+      ],
+      [
+        82,
+        91
+      ]
+    ]
+  },
+  {
+    "method": "zero_shot",
+    "prompt_id": "original",
+    "split": "provisional_validation_seed_42",
+    "checkpoint": "cross-encoder/nli-deberta-v3-small",
+    "candidate_labels": [
+      "sarcastic",
+      "sincere"
+    ],
+    "hypothesis_template": "This text is {}.",
+    "score_semantics": "mutually exclusive NLI scores normalized over the two candidate labels; not calibrated probabilities",
+    "n": 694,
+    "macro_f1": 0.4925399976809509,
+    "f1_sarcastic": 0.3148558758314856,
+    "precision_sincere": 0.7548076923076923,
+    "recall_sincere": 0.6026871401151631,
+    "precision_sarcastic": 0.25539568345323743,
+    "recall_sarcastic": 0.41040462427745666,
+    "confusion_matrix_labels_0_1": [
+      [
+        314,
+        207
+      ],
+      [
+        102,
+        71
+      ]
+    ]
+  },
+  {
+    "method": "zero_shot",
+    "prompt_id": "ironic_or_literal",
+    "split": "provisional_validation_seed_42",
+    "checkpoint": "cross-encoder/nli-deberta-v3-small",
+    "candidate_labels": [
+      "sarcastic or ironic",
+      "literal and sincere"
+    ],
+    "hypothesis_template": "The tone of this text is {}.",
+    "score_semantics": "mutually exclusive NLI scores normalized over the two candidate labels; not calibrated probabilities",
+    "n": 694,
+    "macro_f1": 0.30717428087986465,
+    "f1_sarcastic": 0.4010152284263959,
+    "precision_sincere": 0.810126582278481,
+    "recall_sincere": 0.12284069097888675,
+    "precision_sarcastic": 0.25691056910569104,
+    "recall_sarcastic": 0.9132947976878613,
+    "confusion_matrix_labels_0_1": [
+      [
+        64,
+        457
+      ],
+      [
+        15,
+        158
+      ]
+    ]
+  }
+]

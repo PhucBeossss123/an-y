@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "an-y"
+version = "0.1.0"
+description = "Phuc's iSarcasmEval baseline and zero-shot experiments"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+where = ["src"]

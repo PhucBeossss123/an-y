@@ -1,0 +1,7 @@
+# Use Colab's preinstalled torch build so its CUDA-enabled runtime is preserved.
+joblib==1.4.2
+pandas==2.2.3
+requests==2.34.2
+scikit-learn==1.5.2
+transformers==4.46.3
+safetensors==0.4.5

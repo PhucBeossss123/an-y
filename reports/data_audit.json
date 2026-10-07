@@ -1,0 +1,179 @@
+{
+  "train_source": {
+    "n": 3468,
+    "labels": {
+      "0": 2601,
+      "1": 867
+    },
+    "unique_ids": 3468,
+    "unique_texts": 3457
+  },
+  "provisional_fit": {
+    "n": 2774,
+    "labels": {
+      "0": 2080,
+      "1": 694
+    },
+    "unique_ids": 2774,
+    "unique_texts": 2764
+  },
+  "provisional_validation": {
+    "n": 694,
+    "labels": {
+      "0": 521,
+      "1": 173
+    },
+    "unique_ids": 694,
+    "unique_texts": 694
+  },
+  "official_test": {
+    "n": 1400,
+    "labels": {
+      "0": 1200,
+      "1": 200
+    },
+    "unique_ids": 1400,
+    "unique_texts": 1394
+  },
+  "exact_text_overlap_fit_validation": 1,
+  "exact_text_overlap_train_test": 0,
+  "fit_validation_overlap_rows": [
+    {
+      "sample_id": "train:3067",
+      "label": 0
+    },
+    {
+      "sample_id": "train:3068",
+      "label": 0
+    }
+  ],
+  "repeated_train_text_rows": 20,
+  "repeated_train_text_groups_with_conflicting_labels": 5,
+  "repeated_train_groups": [
+    {
+      "sample_ids": [
+        "train:17",
+        "train:918"
+      ],
+      "labels": [
+        1,
+        0
+      ],
+      "conflicting_labels": true
+    },
+    {
+      "sample_ids": [
+        "train:24",
+        "train:939",
+        "train:940",
+        "train:941"
+      ],
+      "labels": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "conflicting_labels": true
+    },
+    {
+      "sample_ids": [
+        "train:47",
+        "train:1008"
+      ],
+      "labels": [
+        1,
+        0
+      ],
+      "conflicting_labels": true
+    },
+    {
+      "sample_ids": [
+        "train:338",
+        "train:1881"
+      ],
+      "labels": [
+        1,
+        0
+      ],
+      "conflicting_labels": true
+    },
+    {
+      "sample_ids": [
+        "train:648",
+        "train:2811"
+      ],
+      "labels": [
+        1,
+        0
+      ],
+      "conflicting_labels": true
+    },
+    {
+      "sample_ids": [
+        "train:927",
+        "train:928"
+      ],
+      "labels": [
+        0,
+        0
+      ],
+      "conflicting_labels": false
+    },
+    {
+      "sample_ids": [
+        "train:1143",
+        "train:1144"
+      ],
+      "labels": [
+        0,
+        0
+      ],
+      "conflicting_labels": false
+    },
+    {
+      "sample_ids": [
+        "train:2070",
+        "train:2071"
+      ],
+      "labels": [
+        0,
+        0
+      ],
+      "conflicting_labels": false
+    },
+    {
+      "sample_ids": [
+        "train:3067",
+        "train:3068"
+      ],
+      "labels": [
+        0,
+        0
+      ],
+      "conflicting_labels": false
+    }
+  ],
+  "repeated_train_sample_ids": [
+    "train:17",
+    "train:24",
+    "train:47",
+    "train:338",
+    "train:648",
+    "train:918",
+    "train:927",
+    "train:928",
+    "train:939",
+    "train:940",
+    "train:941",
+    "train:1008",
+    "train:1143",
+    "train:1144",
+    "train:1881",
+    "train:2070",
+    "train:2071",
+    "train:2811",
+    "train:3067",
+    "train:3068"
+  ]
+}

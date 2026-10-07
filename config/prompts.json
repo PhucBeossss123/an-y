@@ -1,0 +1,38 @@
+{
+  "model": "cross-encoder/nli-deberta-v3-small",
+  "model_revision": "fa2804872c3b4bd748f38c0185cc85775361e735",
+  "hypothesis_max_length": 256,
+  "batch_size": 4,
+  "prompts": [
+    {
+      "id": "original",
+      "candidate_labels": ["sarcastic", "sincere"],
+      "label_to_id": {"sarcastic": 1, "sincere": 0},
+      "hypothesis_template": "This text is {}."
+    },
+    {
+      "id": "statement",
+      "candidate_labels": ["sarcastic statement", "sincere statement"],
+      "label_to_id": {"sarcastic statement": 1, "sincere statement": 0},
+      "hypothesis_template": "The author intended this as a {}."
+    },
+    {
+      "id": "explicit_negation",
+      "candidate_labels": ["sarcastic", "not sarcastic"],
+      "label_to_id": {"sarcastic": 1, "not sarcastic": 0},
+      "hypothesis_template": "The author is being {}."
+    },
+    {
+      "id": "social_post",
+      "candidate_labels": ["a sarcastic social media post", "a sincere social media post"],
+      "label_to_id": {"a sarcastic social media post": 1, "a sincere social media post": 0},
+      "hypothesis_template": "This is {}."
+    },
+    {
+      "id": "ironic_or_literal",
+      "candidate_labels": ["sarcastic or ironic", "literal and sincere"],
+      "label_to_id": {"sarcastic or ironic": 1, "literal and sincere": 0},
+      "hypothesis_template": "The tone of this text is {}."
+    }
+  ]
+}

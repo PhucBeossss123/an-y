@@ -1,0 +1,33 @@
+{
+  "repository": "https://github.com/iabufarha/iSarcasmEval",
+  "revision": "dfc708b53bde1bb571abfb5692f63231c2232195",
+  "downloaded_at_utc": "2026-10-07T07:08:21.218641+00:00",
+  "license": "MIT (see LICENSE)",
+  "files": {
+    "train.En.csv": {
+      "source_path": "train/train.En.csv",
+      "url": "https://raw.githubusercontent.com/iabufarha/iSarcasmEval/dfc708b53bde1bb571abfb5692f63231c2232195/train/train.En.csv",
+      "bytes": 491395,
+      "sha256": "fde737b69caffbcf81ebe79858ad16ac21881573c308343cd5219c4f7a800ae7"
+    },
+    "task_A_En_test.csv": {
+      "source_path": "test/task_A_En_test.csv",
+      "url": "https://raw.githubusercontent.com/iabufarha/iSarcasmEval/dfc708b53bde1bb571abfb5692f63231c2232195/test/task_A_En_test.csv",
+      "bytes": 130890,
+      "sha256": "0ea25619ca3358ecc8440daac1b9bba4d18455bf5b76d874d8dd6a959e72fc49"
+    },
+    "README.md": {
+      "source_path": "README.md",
+      "url": "https://raw.githubusercontent.com/iabufarha/iSarcasmEval/dfc708b53bde1bb571abfb5692f63231c2232195/README.md",
+      "bytes": 4309,
+      "sha256": "98c79b76a4b5dc0e3cc2fb4e9653048e6c9a7156d6e2b1eacacf296b7acebb30"
+    },
+    "LICENSE": {
+      "source_path": "LICENSE",
+      "url": "https://raw.githubusercontent.com/iabufarha/iSarcasmEval/dfc708b53bde1bb571abfb5692f63231c2232195/LICENSE",
+      "bytes": 1074,
+      "sha256": "f956625f01a15c08af3be7d32480d39d8302fc36f52075c484a004e8e849835f"
+    }
+  },
+  "task": "English Subtask A; text and binary sarcastic label only"
+}

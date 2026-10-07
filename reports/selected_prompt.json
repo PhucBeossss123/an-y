@@ -1,0 +1,12 @@
+{
+  "id": "explicit_negation",
+  "candidate_labels": [
+    "sarcastic",
+    "not sarcastic"
+  ],
+  "label_to_id": {
+    "sarcastic": 1,
+    "not sarcastic": 0
+  },
+  "hypothesis_template": "The author is being {}."
+}
