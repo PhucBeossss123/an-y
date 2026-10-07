@@ -1,0 +1,29 @@
+{
+  "method": "zero_shot",
+  "prompt_id": "ironic_or_literal",
+  "split": "provisional_validation_seed_42",
+  "checkpoint": "cross-encoder/nli-deberta-v3-small",
+  "candidate_labels": [
+    "sarcastic or ironic",
+    "literal and sincere"
+  ],
+  "hypothesis_template": "The tone of this text is {}.",
+  "score_semantics": "mutually exclusive NLI scores normalized over the two candidate labels; not calibrated probabilities",
+  "n": 694,
+  "macro_f1": 0.30717428087986465,
+  "f1_sarcastic": 0.4010152284263959,
+  "precision_sincere": 0.810126582278481,
+  "recall_sincere": 0.12284069097888675,
+  "precision_sarcastic": 0.25691056910569104,
+  "recall_sarcastic": 0.9132947976878613,
+  "confusion_matrix_labels_0_1": [
+    [
+      64,
+      457
+    ],
+    [
+      15,
+      158
+    ]
+  ]
+}

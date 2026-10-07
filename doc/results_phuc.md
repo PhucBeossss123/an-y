@@ -1,5 +1,7 @@
 # Kết quả và phân tích lỗi phần Phúc
 
+Trang kết quả có artifact theo từng lượt tại [`results/phuc/README.md`](../results/phuc/README.md); báo cáo bàn giao chuẩn tại [`bao_cao_phuc.md`](bao_cao_phuc.md). Tệp này giữ bản tổng hợp chi tiết đã ghi từ lượt chạy trước.
+
 ## Cấu hình và trạng thái
 
 - Dữ liệu: iSarcasmEval English Subtask A; raw source revision `dfc708b53bde1bb571abfb5692f63231c2232195`.

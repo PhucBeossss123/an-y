@@ -1,0 +1,29 @@
+{
+  "method": "zero_shot",
+  "prompt_id": "explicit_negation",
+  "split": "provisional_validation_seed_42",
+  "checkpoint": "cross-encoder/nli-deberta-v3-small",
+  "candidate_labels": [
+    "sarcastic",
+    "not sarcastic"
+  ],
+  "hypothesis_template": "The author is being {}.",
+  "score_semantics": "mutually exclusive NLI scores normalized over the two candidate labels; not calibrated probabilities",
+  "n": 694,
+  "macro_f1": 0.5487837948215306,
+  "f1_sarcastic": 0.27636363636363637,
+  "precision_sincere": 0.7719594594594594,
+  "recall_sincere": 0.8771593090211133,
+  "precision_sarcastic": 0.37254901960784315,
+  "recall_sarcastic": 0.21965317919075145,
+  "confusion_matrix_labels_0_1": [
+    [
+      457,
+      64
+    ],
+    [
+      135,
+      38
+    ]
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "method": "zero_shot",
+  "prompt_id": "social_post",
+  "split": "provisional_validation_seed_42",
+  "checkpoint": "cross-encoder/nli-deberta-v3-small",
+  "candidate_labels": [
+    "a sarcastic social media post",
+    "a sincere social media post"
+  ],
+  "hypothesis_template": "This is {}.",
+  "score_semantics": "mutually exclusive NLI scores normalized over the two candidate labels; not calibrated probabilities",
+  "n": 694,
+  "macro_f1": 0.5016044725239762,
+  "f1_sarcastic": 0.3551020408163265,
+  "precision_sincere": 0.7718832891246684,
+  "recall_sincere": 0.5585412667946257,
+  "precision_sarcastic": 0.2744479495268139,
+  "recall_sarcastic": 0.5028901734104047,
+  "confusion_matrix_labels_0_1": [
+    [
+      291,
+      230
+    ],
+    [
+      86,
+      87
+    ]
+  ]
+}

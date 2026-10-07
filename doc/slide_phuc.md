@@ -17,7 +17,7 @@
 
 ## Slide 2 — Zero-shot, prompt và lỗi
 
-- Checkpoint NLI: `facebook/bart-large-mnli`; zero-shot pipeline, không fine-tune.
+- Checkpoint NLI: `cross-encoder/nli-deberta-v3-small` (revision `fa2804872c3b4bd748f38c0185cc85775361e735`); zero-shot pipeline, không fine-tune.
 - So sánh 5 cách diễn đạt; ánh xạ candidate label → `0/1` được khai báo tường minh.
 - Chọn bằng Macro-F1 validation; sau đó so sánh prompt gốc và prompt được chọn trên cùng test.
 - Bàn luận theo kết quả thực: phủ định, emoji, ngữ cảnh/nghĩa bề mặt; ví dụ phải có ID và nhãn thật/dự đoán.
