@@ -50,6 +50,19 @@ git switch -c huy/data-bert
 
 Tên nhánh: Huy `huy/data-bert`; Tuấn `tuan/roberta-evaluation`; Kiệt `kiet/distilbert-demo`. Chỉ sửa phần sở hữu đã ghi trong `doc/phan_cong.md`. Không commit trực tiếp lên `main` hoặc sửa phần của người khác.
 
+Để nhận thay đổi mới đã được Phúc tích hợp vào `main`, trước hết không được có thay đổi local chưa commit; sau đó cập nhật `main`, rồi đưa phần chung vào nhánh riêng và gửi lại phiên bản đã kiểm tra để review:
+
+```powershell
+git status
+git fetch origin
+git switch main
+git pull --ff-only origin main
+git switch huy/data-bert
+git merge main
+```
+
+Thay `huy/data-bert` bằng nhánh của mình. Chạy lại kiểm tra, commit local thay đổi tích hợp và tạo bundle phiên bản mới; không push commit mới chỉ dựa trên lần duyệt trước.
+
 ### Tạo môi trường và dữ liệu
 
 Từ thư mục gốc repo, dùng Python 3.12 trên Windows:
