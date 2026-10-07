@@ -1,66 +1,32 @@
-# Ẩn Ý
+# Ẩn Ý — iSarcasmEval
 
-Phần việc của Phúc cho đề tài 11: baseline TF-IDF + Linear SVM và zero-shot Subtask A trên iSarcasmEval tiếng Anh.
+Repo chung của nhóm 4 người cho bài toán phát hiện mỉa mai trên iSarcasmEval tiếng Anh, Subtask A. Repo hiện ở chế độ private; thành viên cần được Phúc mời và chấp nhận lời mời bằng tài khoản riêng trước khi clone.
 
-## Thiết lập trên Windows
+## Bắt đầu tại đây
 
-```powershell
-py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe -m pip install -e .
-```
+- [Cách tham gia nhóm và quy trình review trước khi push](doc/cach_lam.md)
+- [Giao diện dữ liệu, split và prediction dùng chung](doc/giao_dien.md)
+- [Phân công và yêu cầu đề tài](doc/phan_cong.md)
+- [Rule của repo](AGENTS.md)
+- [Trạng thái hiện tại của từng phần](doc/review.md)
 
-Nếu `py` không có, dùng Python 3.12 đã cài để tạo môi trường ảo. Không cài thư viện vào môi trường hệ thống.
+## Kết quả Phúc
 
-`requirements.txt` cài PyTorch CPU để thiết lập Windows gọn và ổn định. Nếu muốn dùng GPU, cài wheel CUDA 12.4 chính thức theo [hướng dẫn phiên bản PyTorch](https://docs.pytorch.org/get-started/previous-versions/): `python -m pip install --force-reinstall --no-deps --index-url https://download.pytorch.org/whl/cu124 torch==2.5.1`. Wheel này rất lớn; có thể giữ CPU để chạy.
+- **[Xem kết quả Phúc](https://github.com/PhucBeossss123/an-y/blob/phuc/baseline-zero-shot/results/phuc/README.md)** — bảng điểm, trạng thái, link tới prediction, prompt và từng run.
+- [Báo cáo phương pháp, kết quả và phân tích lỗi](https://github.com/PhucBeossss123/an-y/blob/phuc/baseline-zero-shot/doc/bao_cao_phuc.md)
+- [Chạy lại baseline và zero-shot](https://github.com/PhucBeossss123/an-y/blob/phuc/baseline-zero-shot/doc/cach_lam.md#chay-lai-phan-cua-phuc)
 
-## Tải dữ liệu và chạy
+Kết quả Phúc hiện dùng split phát triển tạm seed 42 vì split chung của Huy chưa được bàn giao. Official test đã chạy; các con số trên trang kết quả không thay thế kết quả chạy lại trên split nhóm.
 
-```powershell
-.\.venv\Scripts\python.exe scripts\download_data.py
-.\.venv\Scripts\python.exe scripts\audit_data.py
-.\.venv\Scripts\python.exe -m an_y.baseline --data-dir data\raw --output-dir outputs
-.\.venv\Scripts\python.exe -m an_y.zero_shot validate --data-dir data\raw --output-dir outputs
-```
+## Nhánh và phần việc
 
-Dữ liệu ở `data/raw/` và model cache không được commit. Script tải đúng hai CSV tiếng Anh cần cho Subtask A, README và LICENSE từ revision GitHub đã resolve; `manifest.json` lưu revision và SHA-256. Zero-shot dùng `cross-encoder/nli-deberta-v3-small`, checkpoint NLI có hướng dẫn pipeline Transformers và giấy phép Apache-2.0. Nếu Huy bàn giao loader/split dùng chung, thay adapter tạm theo `doc/cach_lam.md` và chạy lại validation.
+| Thành viên | Nhánh | Phạm vi |
+|---|---|---|
+| Phúc | `phuc/baseline-zero-shot` | TF-IDF + SVM, zero-shot, thử prompt, báo cáo phần mình |
+| Huy | `huy/data-bert` | Dữ liệu/split chung, BERT-base |
+| Tuấn | `tuan/roberta-evaluation` | RoBERTa-base, metric chung, tổng hợp |
+| Kiệt | `kiet/distilbert-demo` | DistilBERT, demo, ghép slide |
 
-Sau khi chọn prompt chỉ từ validation, chạy test một lần:
+Tên tài khoản GitHub và lời mời của Huy, Tuấn, Kiệt còn chờ Phúc cung cấp/xác nhận. Chưa có code nào của các bạn được ghi nhận là đã nhận hoặc duyệt.
 
-```powershell
-.\.venv\Scripts\python.exe -m an_y.zero_shot test --data-dir data\raw --output-dir outputs
-```
-
-Lệnh test đòi `outputs/selected_prompt.json` do lệnh `validate` tạo. Đánh giá baseline test dùng:
-
-```powershell
-.\.venv\Scripts\python.exe -m an_y.baseline --data-dir data\raw --output-dir outputs --split test
-```
-
-Cuối cùng, xác minh và đóng gói các prediction/metric nhỏ đã chạy:
-
-```powershell
-.\.venv\Scripts\python.exe scripts\verify_outputs.py
-.\.venv\Scripts\python.exe scripts\package_results.py
-```
-
-`reports/` chứa metric, bảng prompt, prediction không kèm raw text, data manifest và thông báo license. `data/raw/`, model cache và checkpoint không được commit.
-
-## Google Colab (nếu cần GPU)
-
-Đưa source vào Colab rồi cài `requirements-colab.txt`; file này giữ PyTorch có sẵn của runtime để không thay wheel CUDA bằng wheel CPU:
-
-```python
-%pip install -r requirements-colab.txt
-%pip install -e .
-!python scripts/download_data.py
-!python scripts/audit_data.py
-!python -m an_y.baseline --data-dir data/raw --output-dir outputs
-!python -m an_y.zero_shot validate --data-dir data/raw --output-dir outputs
-```
-
-Sau khi kiểm tra/chọn prompt từ validation, chạy hai lệnh test ở trên. Không dùng test để đổi prompt.
-
-## Kết quả
-
-Metric, prediction, bảng thử prompt, log và lỗi được ghi trong `outputs/`. Hãy điền các số liệu đã chạy vào `doc/cach_lam.md` và `doc/slide_phuc.md`; không commit dữ liệu, model hoặc cache.
+Các phần BERT, RoBERTa, DistilBERT, demo, metric chung và kết quả so sánh toàn nhóm đang **chờ thành viên bàn giao**. Không điền số liệu thay cho họ.

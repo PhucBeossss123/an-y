@@ -11,6 +11,9 @@ data/processed/
 models/
 checkpoints/
 outputs/
+*.bundle
+*.review.bundle
+review-*/
 *.tmp
 *.log
 *.pt
