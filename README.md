@@ -1,6 +1,6 @@
 # Ẩn Ý — iSarcasmEval
 
-Repo chung của nhóm 4 người cho bài toán phát hiện mỉa mai trên iSarcasmEval tiếng Anh, Subtask A. Visibility được xác minh gần nhất là private; trạng thái hiện tại chưa thể kiểm tra ngày 12/10/2026 vì GitHub CLI không đăng nhập được. Với repo private, thành viên cần được Phúc mời và chấp nhận lời mời bằng tài khoản riêng trước khi clone.
+Repo chung của nhóm 4 người cho bài toán phát hiện mỉa mai trên iSarcasmEval tiếng Anh, Subtask A. Repo được chuyển sang public và xác minh qua GitHub API ngày 12/10/2026. Mọi người có thể xem và clone; muốn push trực tiếp vẫn cần được thêm làm collaborator bằng tài khoản GitHub đã xác nhận.
 
 ## Bắt đầu tại đây
 
@@ -8,10 +8,11 @@ Repo chung của nhóm 4 người cho bài toán phát hiện mỉa mai trên iS
 - [Giao diện dữ liệu, split và prediction dùng chung](doc/giao_dien.md)
 - [Phân công và yêu cầu đề tài](doc/phan_cong.md)
 - [Tạo/cập nhật task bằng Issue Form](.github/ISSUE_TEMPLATE/team-task.yml) · [Issue tracker](https://github.com/PhucBeossss123/an-y/issues)
+- Task: [Phúc #1](https://github.com/PhucBeossss123/an-y/issues/1) · [Huy #2](https://github.com/PhucBeossss123/an-y/issues/2) · [Tuấn #3](https://github.com/PhucBeossss123/an-y/issues/3) · [Kiệt #4](https://github.com/PhucBeossss123/an-y/issues/4)
 - [Rule của repo](AGENTS.md)
 - [Trạng thái hiện tại của từng phần](doc/review.md)
 
-Visibility lần xác minh thành công gần nhất được ghi trong `doc/review.md` là private. Ngày 12/10/2026, trạng thái đăng nhập GitHub không hợp lệ nên chưa xác minh được visibility hoặc đồng bộ issue tracker; xem ghi chú mới nhất trong [hướng dẫn cộng tác](doc/cach_lam.md).
+Branch protection của `main` chưa xác minh được; xem ghi chú kiểm tra mới nhất trong [hướng dẫn cộng tác](doc/cach_lam.md).
 
 ## Kết quả Phúc
 
