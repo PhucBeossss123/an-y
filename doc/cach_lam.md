@@ -155,4 +155,5 @@ Lệnh in JSON ra terminal, không tự ghi prediction vào bảng thực nghi�
 - GitHub API kiểm tra bảo vệ `main` trả HTTP 403, nên trạng thái branch protection chưa xác minh. Không thay đổi hoặc bỏ qua bảo vệ nhánh; không merge vào `main`.
 - Đã quét 126 Git object reachable từ các nhánh cho 7 nhóm mẫu credential (GitHub token, AWS key, PEM private key, JWT, Slack token, Google API key và assignment dạng API key/token/password/secret). Không có match. Đây là rà soát theo chữ ký, không bảo đảm tìm thấy mọi credential có thể có; không viết lại lịch sử Git.
 - Form task ở `.github/ISSUE_TEMPLATE/team-task.yml`; phân công/đầu vào/đầu ra/hạn/acceptance criteria ở `doc/phan_cong.md`. Repo public cho phép xem và clone, nhưng không tự cấp quyền push.
-- Commit setup `a26fd3b` được tạo trên nhánh riêng `phuc/team-setup` và đã push lên `origin`. PR chưa tạo; chưa tích hợp vào `main`.
+- Bản setup sạch, không chứa thay đổi model/baseline, nằm trên nhánh `phuc/team-setup-docs`; hai commit setup đã cherry-pick từ nhánh `phuc/team-setup`. Nhánh `phuc/team-setup` cũ vẫn được giữ nguyên.
+- PR review tài liệu: [#5](https://github.com/PhucBeossss123/an-y/pull/5). PR chưa merge vào `main`; review/tích hợp còn chờ.

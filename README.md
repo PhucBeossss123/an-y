@@ -9,6 +9,7 @@ Repo chung của nhóm 4 người cho bài toán phát hiện mỉa mai trên iS
 - [Phân công và yêu cầu đề tài](doc/phan_cong.md)
 - [Tạo/cập nhật task bằng Issue Form](.github/ISSUE_TEMPLATE/team-task.yml) · [Issue tracker](https://github.com/PhucBeossss123/an-y/issues)
 - Task: [Phúc #1](https://github.com/PhucBeossss123/an-y/issues/1) · [Huy #2](https://github.com/PhucBeossss123/an-y/issues/2) · [Tuấn #3](https://github.com/PhucBeossss123/an-y/issues/3) · [Kiệt #4](https://github.com/PhucBeossss123/an-y/issues/4)
+- [PR review tài liệu thiết lập](https://github.com/PhucBeossss123/an-y/pull/5) — chưa merge.
 - [Rule của repo](AGENTS.md)
 - [Trạng thái hiện tại của từng phần](doc/review.md)
 
