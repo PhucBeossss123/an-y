@@ -94,6 +94,8 @@ Nguồn tài liệu: `Pasted text.txt` do người dùng đính kèm (yêu cầu
 
 Tạo issue từ [GitHub Issue Form](../.github/ISSUE_TEMPLATE/team-task.yml). Issue tracker: <https://github.com/PhucBeossss123/an-y/issues>. Kiểm tra issue đã có trước khi tạo để tránh trùng. Tên nhánh dưới đây là đề xuất, không khẳng định nhánh đã được tạo trên remote.
 
+Issue đã tạo ngày 12/10/2026: [Phúc #1](https://github.com/PhucBeossss123/an-y/issues/1), [Huy #2](https://github.com/PhucBeossss123/an-y/issues/2), [Tuấn #3](https://github.com/PhucBeossss123/an-y/issues/3), [Kiệt #4](https://github.com/PhucBeossss123/an-y/issues/4). Username ba thành viên vẫn chờ xác nhận; không gán account hoặc gửi lời mời.
+
 | Người phụ trách | Mục tiêu / phạm vi | Đầu vào và phụ thuộc | Bàn giao và tiêu chí nghiệm thu | Nhánh đề xuất |
 |---|---|---|---|---|
 | Huỳnh Trần Nhật Phúc (`PhucBeossss123`) | Baseline TF-IDF + SVM; zero-shot sarcastic/sincere; prompt engineering; review, duyệt phiên bản và tổng kết | Dữ liệu/split chung và evaluator của nhóm từ Huy/Tuấn; code, kết quả hiện có trong `src/an_y`, `reports/`, `results/phuc/` | Chạy lại trên split nhóm sau khi chốt; ghi cấu hình và lệnh; Macro-F1 riêng với sarcastic F1; validation dùng chọn cấu hình, test chỉ báo cáo; prompt comparison và phân tích lỗi có ví dụ thực | `phuc/baseline-zero-shot` (đã tồn tại cục bộ và trên origin khi kiểm tra workspace) |
@@ -111,4 +113,4 @@ Tạo issue từ [GitHub Issue Form](../.github/ISSUE_TEMPLATE/team-task.yml). I
 
 ### Điều kiện cộng tác GitHub
 
-Repo public (nếu được xác minh sau khi đổi visibility) chỉ cho phép xem và clone; không tự cấp quyền push. Muốn push trực tiếp, mỗi thành viên cần được thêm làm collaborator và chấp nhận lời mời bằng tài khoản riêng đã xác minh. Không đoán username, không tự mời người chưa xác minh. Review trước push là quy trình nhóm; branch protection không thay thế quy trình đó. Thành viên không push hoặc merge vào `main` theo quy ước nhóm.
+Repo đã được xác minh public ngày 12/10/2026; public cho phép xem và clone nhưng không tự cấp quyền push. Muốn push trực tiếp, mỗi thành viên cần được thêm làm collaborator và chấp nhận lời mời bằng tài khoản riêng đã xác minh. Không đoán username, không tự mời người chưa xác minh. Review trước push là quy trình nhóm; trạng thái branch protection của `main` chưa xác minh được, và dù có bật cũng không thay thế quy trình đó. Thành viên không push hoặc merge vào `main` theo quy ước nhóm.
