@@ -146,3 +146,11 @@ Dự đoán một câu sau khi đã chạy baseline validation và tải model z
 ```
 
 Lệnh in JSON ra terminal, không tự ghi prediction vào bảng thực nghiệm. Bằng chứng đã chạy hiện có trong `results/phuc/`; `outputs/` chứa model cục bộ nhưng bị `.gitignore` loại khỏi Git.
+
+## Cập nhật quyền truy cập và task tracker — 12/10/2026
+
+- Lần kiểm tra workspace này: `git status --short --branch` cho thấy nhánh `phuc/baseline-zero-shot` sạch; `origin` là `https://github.com/PhucBeossss123/an-y.git`. Local và remote-tracking có `main` cùng nhánh Phúc.
+- `gh auth status` báo tài khoản `PhucBeossss123` có token không hợp lệ. Kết nối GitHub qua `git ls-remote` cũng thất bại do không kết nối được `github.com:443`. Vì vậy chưa thể xác minh visibility hiện tại, branch protection, danh sách issue để chống trùng, hoặc tạo/cập nhật issue. Không thay đổi visibility, collaborator, issue, nhánh remote hay quyền repo.
+- Đã rà soát toàn bộ commit reachable từ các nhánh hiện có cho các mẫu high-confidence: GitHub token (`gh*`/`github_pat_*`), AWS access key, và private key PEM. Không có file nào khớp. Đây là rà soát theo mẫu; trước khi chuyển public cần xác minh credential khác không nằm trong các mẫu này và xử lý mọi phát hiện, không viết lại lịch sử Git.
+- Form task được chuẩn bị tại `.github/ISSUE_TEMPLATE/team-task.yml`; phân công/đầu vào/đầu ra/hạn và acceptance criteria ở `doc/phan_cong.md`. Các issue thật và visibility change vẫn đang chờ đăng nhập GitHub hợp lệ và kiểm tra issue trùng.
+- Để tiếp tục thao tác GitHub: Phúc đăng nhập lại bằng `gh auth login -h github.com` trên máy của mình, sau đó xác minh đúng tài khoản có quyền admin trên `PhucBeossss123/an-y`. Khi truy cập được, kiểm tra issue trùng và visibility trước; chỉ chuyển public sau khi hoàn tất rà soát credential.
