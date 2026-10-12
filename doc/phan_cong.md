@@ -87,3 +87,28 @@ Không đợi đến 19/10 mới gửi code lần đầu. Bản gửi 15/10 ph�
 - Chưa đặt nhắc lịch tự động. Mục này là ghi chú yêu cầu để tiếp tục công việc ở lượt sau.
 
 Nguồn tài liệu: `Pasted text.txt` do người dùng đính kèm (yêu cầu chung, mục 11, báo cáo tiến độ/cuối kỳ) và ảnh danh sách nhóm. Đây là kế hoạch phân công; chưa có code hoặc kết quả thực nghiệm được tạo hay xác minh.
+
+## 7. Task, đầu vào, đầu ra và nghiệm thu
+
+**Cập nhật theo yêu cầu ngày 12/10/2026:** phần trên mục 6 ghi lại yêu cầu ở lượt phân công ban đầu. Hướng dẫn GitHub và quy trình dưới đây đã được bổ sung; khi có khác biệt, tuân theo `AGENTS.md` hiện tại và hướng dẫn cộng tác tại [`doc/cach_lam.md`](cach_lam.md).
+
+Tạo issue từ [GitHub Issue Form](../.github/ISSUE_TEMPLATE/team-task.yml). Issue tracker: <https://github.com/PhucBeossss123/an-y/issues>. Kiểm tra issue đã có trước khi tạo để tránh trùng. Tên nhánh dưới đây là đề xuất, không khẳng định nhánh đã được tạo trên remote.
+
+| Người phụ trách | Mục tiêu / phạm vi | Đầu vào và phụ thuộc | Bàn giao và tiêu chí nghiệm thu | Nhánh đề xuất |
+|---|---|---|---|---|
+| Huỳnh Trần Nhật Phúc (`PhucBeossss123`) | Baseline TF-IDF + SVM; zero-shot sarcastic/sincere; prompt engineering; review, duyệt phiên bản và tổng kết | Dữ liệu/split chung và evaluator của nhóm từ Huy/Tuấn; code, kết quả hiện có trong `src/an_y`, `reports/`, `results/phuc/` | Chạy lại trên split nhóm sau khi chốt; ghi cấu hình và lệnh; Macro-F1 riêng với sarcastic F1; validation dùng chọn cấu hình, test chỉ báo cáo; prompt comparison và phân tích lỗi có ví dụ thực | `phuc/baseline-zero-shot` (đã tồn tại cục bộ và trên origin khi kiểm tra workspace) |
+| Lê Quốc Huy (GitHub username: chờ cung cấp) | Loader/dữ liệu/split dùng chung và BERT-base, ba seed `42`, `123`, `2026` | Nguồn iSarcasmEval tiếng Anh chính thức; quy ước `sample_id`, `text`, `label`; giữ official test; không dùng rephrase/annotation làm feature | Manifest revision/checksum; thống kê nhãn; split cố định; loader được các thành viên dùng; mỗi seed có cấu hình, lệnh, metric, prediction và log; bàn giao code/checkpoint ngoài Git và phần báo cáo. Nghiệm thu khi Phúc tái hiện được giao diện và đối chiếu được artifact | `huy/data-bert` (đề xuất; chưa xác minh trên remote) |
+| Trần Hoàng Tuấn (GitHub username: chờ cung cấp) | RoBERTa-base ba seed; evaluator dùng chung; mean ± std; so sánh và tổng hợp báo cáo | Split/loader của Huy; quy ước đầu ra chung; kết quả của ba chủ mô hình | Metric cùng công thức, tách Macro-F1 và sarcastic F1; confusion matrix; kết quả từng seed và mean ± std; phân tích tối thiểu ba nhóm lỗi, gồm phủ định và emoji; bảng chỉ dùng kết quả có artifact | `tuan/roberta-evaluation` (đề xuất; chưa xác minh trên remote) |
+| Nguyễn Trần Anh Kiệt (GitHub username: chờ cung cấp) | DistilBERT ba seed; demo Gradio/Streamlit; hướng dẫn demo và ghép slide | Split/loader chung; prediction interface đã thống nhất; checkpoint thắng được chọn trên validation từ ba kiến trúc | Kết quả ba seed có cấu hình, lệnh và artifact; demo chạy với mô hình được chọn trên validation; hướng dẫn tái chạy; phần báo cáo và slide có số liệu thực, không dùng output mẫu làm kết quả | `kiet/distilbert-demo` (đề xuất; chưa xác minh trên remote) |
+
+### Trạng thái được xác minh trong workspace ngày 12/10/2026
+
+- Nhánh đang mở là `phuc/baseline-zero-shot`, sạch tại thời điểm kiểm tra; remote `origin` trỏ tới `PhucBeossss123/an-y`. Có `main` và nhánh Phúc ở local/remote.
+- Code, kết quả baseline và zero-shot của Phúc đã có trong repo. Validation là split tạm seed 42; cần chạy lại khi Huy bàn giao split chung.
+- Tài liệu review hiện ghi Huy, Tuấn và Kiệt chưa bàn giao code/kết quả và username GitHub còn chờ. Đây là trạng thái theo bằng chứng lưu trong repo, chưa phải xác nhận tiến độ mới trực tiếp từ thành viên.
+- Hạn gửi bản chạy được để review là 15/10/2026, 20:00 giờ Việt Nam. Review/sửa 16–17/10; tích hợp 18/10; hoàn tất trước 20:00 ngày 19/10. Chưa đánh dấu các mốc này hoàn thành.
+- Mỗi issue cần ghi người phụ trách, nhánh đề xuất, phụ thuộc, đầu ra, acceptance checklist, hạn review/hoàn tất, trạng thái và SHA được Phúc duyệt. Thành viên gửi ZIP/patch/bundle trước; chỉ push đúng SHA sau khi Phúc duyệt rõ ràng. Nếu sửa sau duyệt, gửi review lại trước lần push kế tiếp.
+
+### Điều kiện cộng tác GitHub
+
+Repo public (nếu được xác minh sau khi đổi visibility) chỉ cho phép xem và clone; không tự cấp quyền push. Muốn push trực tiếp, mỗi thành viên cần được thêm làm collaborator và chấp nhận lời mời bằng tài khoản riêng đã xác minh. Không đoán username, không tự mời người chưa xác minh. Review trước push là quy trình nhóm; branch protection không thay thế quy trình đó. Thành viên không push hoặc merge vào `main` theo quy ước nhóm.
