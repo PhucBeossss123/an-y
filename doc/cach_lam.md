@@ -157,3 +157,8 @@ Lệnh in JSON ra terminal, không tự ghi prediction vào bảng thực nghi�
 
 - Tác vụ Windows `iSarcasmEval - sync Phuc branch` chạy `scripts/sync_phuc_branch.ps1` lúc 17:00 hằng ngày bằng tài khoản Windows đang đăng nhập. Script giới hạn ở nhánh `phuc/baseline-zero-shot` và remote `origin`; nó chỉ đẩy commit đã có, không tự commit file. Nó fast-forward thay đổi remote nếu working tree tracked sạch, và dừng khi nhánh lệch nhau.
 - Có thể chạy thủ công từ repo bằng `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\sync_phuc_branch.ps1`. Máy cần đang bật và đăng nhập lúc chạy; tác vụ đã tạo trên Windows ngày 13/10/2026.
+
+## Giới hạn độ dài file code
+
+- Mỗi file code Python hoặc PowerShell trong `src/`, `scripts/` và `tests/` được giới hạn tối đa **500 dòng**. `scripts/check_line_limits.py` kiểm tra giới hạn này; thư viện cài trong `.venv/` nằm ngoài phạm vi. GitHub Actions chạy kiểm tra này trên mỗi push và pull request.
+- Chạy cục bộ bằng `& .\.venv\Scripts\python.exe scripts\check_line_limits.py`. Kết quả hiện tại: đạt; 13 file code, file dài nhất `scripts/package_results.py` có 263 dòng.

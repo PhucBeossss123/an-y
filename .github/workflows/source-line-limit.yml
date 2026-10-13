@@ -1,0 +1,13 @@
+name: Source file line limit
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check-source-file-length:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check project source files are at most 500 lines
+        run: python scripts/check_line_limits.py
