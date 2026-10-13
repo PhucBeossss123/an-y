@@ -146,3 +146,9 @@ Dự đoán một câu sau khi đã chạy baseline validation và tải model z
 ```
 
 Lệnh in JSON ra terminal, không tự ghi prediction vào bảng thực nghiệm. Bằng chứng đã chạy hiện có trong `results/phuc/`; `outputs/` chứa model cục bộ nhưng bị `.gitignore` loại khỏi Git.
+
+## Rà soát code — 13/10/2026
+
+- Phần ứng dụng `src/an_y` có 603 dòng tính cả dòng trống và khoảng 493 dòng lệnh/code; file `threadpoolctl.py` trong `.venv/Lib/site-packages` là thư viện cài ngoài, không phải code dự án nên không chỉnh sửa.
+- Tách riêng bước chọn cấu hình SVM trên validation và bước đánh giá test; tách đọc dữ liệu, chọn prompt, chấm prompt và chạy test thành các hàm có tên theo nhiệm vụ. Loader chỉ trả `sample_id`, `text`, `label`, kiểm tra nhãn `0/1`, và không đưa rephrase/chú giải vào đặc trưng.
+- Đã chạy `& .\.venv\Scripts\python.exe -m compileall -q src\an_y` (đạt) và `git diff --check` (đạt). Không chạy lại huấn luyện hoặc suy luận model; không tạo kết quả thực nghiệm mới.
