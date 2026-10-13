@@ -152,3 +152,8 @@ Lệnh in JSON ra terminal, không tự ghi prediction vào bảng thực nghi�
 - Phần ứng dụng `src/an_y` có 603 dòng tính cả dòng trống và khoảng 493 dòng lệnh/code; file `threadpoolctl.py` trong `.venv/Lib/site-packages` là thư viện cài ngoài, không phải code dự án nên không chỉnh sửa.
 - Tách riêng bước chọn cấu hình SVM trên validation và bước đánh giá test; tách đọc dữ liệu, chọn prompt, chấm prompt và chạy test thành các hàm có tên theo nhiệm vụ. Loader chỉ trả `sample_id`, `text`, `label`, kiểm tra nhãn `0/1`, và không đưa rephrase/chú giải vào đặc trưng.
 - Đã chạy `& .\.venv\Scripts\python.exe -m compileall -q src\an_y` (đạt) và `git diff --check` (đạt). Không chạy lại huấn luyện hoặc suy luận model; không tạo kết quả thực nghiệm mới.
+
+## Đồng bộ GitHub hằng ngày lúc 17:00
+
+- Tác vụ Windows `iSarcasmEval - sync Phuc branch` chạy `scripts/sync_phuc_branch.ps1` lúc 17:00 hằng ngày bằng tài khoản Windows đang đăng nhập. Script giới hạn ở nhánh `phuc/baseline-zero-shot` và remote `origin`; nó chỉ đẩy commit đã có, không tự commit file. Nó fast-forward thay đổi remote nếu working tree tracked sạch, và dừng khi nhánh lệch nhau.
+- Có thể chạy thủ công từ repo bằng `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\sync_phuc_branch.ps1`. Máy cần đang bật và đăng nhập lúc chạy; tác vụ đã tạo trên Windows ngày 13/10/2026.
