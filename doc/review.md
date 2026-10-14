@@ -20,3 +20,11 @@
 | Kiệt | DistilBERT, demo and slide integration | Waiting for GitHub username, invitation acceptance and handoff |
 
 No collaborator invitations have been sent. No member code has been received, run or approved for push. Phúc must approve an exact `head_sha` before a member pushes.
+
+## Thiết lập nhóm — xác minh ngày 12/10/2026
+
+- Repo `PhucBeossss123/an-y` đã được đổi sang public. GitHub API trả HTTP 200 và xác nhận `private: false`; tài khoản có quyền admin.
+- Đã rà soát 126 Git object reachable theo 7 nhóm chữ ký credential (GitHub token, AWS key, PEM private key, JWT, Slack token, Google API key và assignment dạng API key/token/password/secret); không có match. Rà soát theo mẫu không bảo đảm bao phủ mọi định dạng credential.
+- Issue đã tạo, đang mở: [Phúc #1](https://github.com/PhucBeossss123/an-y/issues/1), [Huy #2](https://github.com/PhucBeossss123/an-y/issues/2), [Tuấn #3](https://github.com/PhucBeossss123/an-y/issues/3), [Kiệt #4](https://github.com/PhucBeossss123/an-y/issues/4). Username Huy, Tuấn, Kiệt vẫn chờ chính chủ xác nhận; chưa gửi lời mời collaborator.
+- Nhánh setup chỉ chứa README, tài liệu và Issue Form: `phuc/team-setup-docs`. PR [#5](https://github.com/PhucBeossss123/an-y/pull/5) đang mở, chưa merge; HEAD đã xác minh là `92bea88c271740b773e82cfe844f1bc3da5f1925`.
+- Trạng thái branch protection `main` chưa xác minh được vì GitHub API trả HTTP 403. Không thay đổi hoặc bỏ qua cài đặt bảo vệ nhánh.

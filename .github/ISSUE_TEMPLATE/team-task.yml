@@ -1,0 +1,123 @@
+name: Team task
+description: Giao việc và cập nhật tiến độ cho iSarcasmEval English Subtask A
+title: "[TASK] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Điền issue riêng cho một người phụ trách. Kiểm tra issue tracker trước để tránh trùng. Thành viên gửi ZIP/patch/Git bundle cho Phúc review; chỉ push đúng phiên bản sau khi được duyệt rõ ràng.
+  - type: dropdown
+    id: owner
+    attributes:
+      label: Người phụ trách
+      options:
+        - Huỳnh Trần Nhật Phúc — baseline / zero-shot / review
+        - Lê Quốc Huy — dữ liệu dùng chung / BERT-base
+        - Trần Hoàng Tuấn — RoBERTa-base / metrics / tổng hợp báo cáo
+        - Nguyễn Trần Anh Kiệt — DistilBERT / demo / slide
+    validations:
+      required: true
+  - type: input
+    id: github_username
+    attributes:
+      label: GitHub username
+      description: Username đã được chính thành viên xác nhận; nếu chưa có, ghi "chờ cung cấp".
+      placeholder: "chờ cung cấp"
+    validations:
+      required: true
+  - type: textarea
+    id: objective_scope
+    attributes:
+      label: Mục tiêu và phạm vi công việc
+      placeholder: Nêu rõ việc thuộc phạm vi người phụ trách và phần không thực hiện trong task này.
+    validations:
+      required: true
+  - type: input
+    id: working_branch
+    attributes:
+      label: Nhánh làm việc
+      description: Phân biệt nhánh đã xác minh tồn tại với tên nhánh đề xuất.
+      placeholder: "ví dụ: huy/data-bert (đề xuất, chưa xác minh trên remote)"
+    validations:
+      required: true
+  - type: textarea
+    id: files_modules
+    attributes:
+      label: File hoặc module dự kiến sửa
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Đầu vào/phụ thuộc cần từ thành viên khác
+      description: Nêu người cung cấp, định dạng và thời điểm cần; ghi "không có" nếu không phụ thuộc.
+    validations:
+      required: true
+  - type: textarea
+    id: checklist_deliverables
+    attributes:
+      label: Checklist công việc và sản phẩm bàn giao
+      description: Ghi code, tài liệu, artifact, cách chạy lại và tiêu chí nghiệm thu.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: experiment_details
+    attributes:
+      label: Seed, cấu hình, kết quả và cách chạy lại
+      description: Chỉ ghi kết quả đã thực sự chạy; báo Macro-F1 riêng với sarcastic-class F1. Với fine-tuning, ghi từng seed và mean ± std.
+      render: text
+    validations:
+      required: false
+  - type: input
+    id: review_deadline
+    attributes:
+      label: Hạn gửi review (giờ Việt Nam)
+      placeholder: "15/10/2026 20:00"
+    validations:
+      required: true
+  - type: input
+    id: completion_deadline
+    attributes:
+      label: Hạn hoàn tất (giờ Việt Nam)
+      placeholder: "19/10/2026 20:00"
+    validations:
+      required: true
+  - type: textarea
+    id: blockers
+    attributes:
+      label: Vướng mắc
+      description: Ghi tác động và người cần hỗ trợ; nếu chưa có, ghi "không có".
+    validations:
+      required: false
+  - type: dropdown
+    id: status
+    attributes:
+      label: Trạng thái
+      options:
+        - Chưa làm
+        - Đang làm
+        - Chờ review
+        - Cần sửa
+        - Đã duyệt
+    validations:
+      required: true
+  - type: input
+    id: approved_version
+    attributes:
+      label: Phiên bản/commit SHA Phúc đã duyệt
+      description: Để trống đến khi Phúc duyệt rõ đúng phiên bản.
+      placeholder: "chưa duyệt"
+    validations:
+      required: false
+  - type: input
+    id: pull_request
+    attributes:
+      label: Pull request sau khi được phép push
+      description: Chỉ thêm link PR sau khi đúng SHA đã được Phúc duyệt và push.
+      placeholder: "chưa có"
+    validations:
+      required: false

@@ -146,3 +146,14 @@ Dự đoán một câu sau khi đã chạy baseline validation và tải model z
 ```
 
 Lệnh in JSON ra terminal, không tự ghi prediction vào bảng thực nghiệm. Bằng chứng đã chạy hiện có trong `results/phuc/`; `outputs/` chứa model cục bộ nhưng bị `.gitignore` loại khỏi Git.
+
+## Cập nhật quyền truy cập và task tracker — 12/10/2026
+
+- Repo `PhucBeossss123/an-y` được chuyển từ private sang public. GitHub API trả HTTP 200 và xác nhận `private: false`, default branch `main`.
+- Quyền admin được xác nhận qua GitHub API. Danh sách issue trước khi tạo trả về rỗng; đã tạo và kiểm tra cả bốn issue: [Phúc #1](https://github.com/PhucBeossss123/an-y/issues/1), [Huy #2](https://github.com/PhucBeossss123/an-y/issues/2), [Tuấn #3](https://github.com/PhucBeossss123/an-y/issues/3), [Kiệt #4](https://github.com/PhucBeossss123/an-y/issues/4). Tiêu đề và nội dung tiếng Việt đã được xác minh/cập nhật UTF-8. Username Huy, Tuấn, Kiệt vẫn chờ chính chủ cung cấp; chưa gửi lời mời collaborator.
+- GitHub CLI báo token không hợp lệ và `git ls-remote` bị chặn trong sandbox, nhưng push nhánh setup thành công sau khi cho phép network; Git Credential Manager đã cung cấp credential để đọc/cập nhật GitHub API mà không in token.
+- GitHub API kiểm tra bảo vệ `main` trả HTTP 403, nên trạng thái branch protection chưa xác minh. Không thay đổi hoặc bỏ qua bảo vệ nhánh; không merge vào `main`.
+- Đã quét 126 Git object reachable từ các nhánh cho 7 nhóm mẫu credential (GitHub token, AWS key, PEM private key, JWT, Slack token, Google API key và assignment dạng API key/token/password/secret). Không có match. Đây là rà soát theo chữ ký, không bảo đảm tìm thấy mọi credential có thể có; không viết lại lịch sử Git.
+- Form task ở `.github/ISSUE_TEMPLATE/team-task.yml`; phân công/đầu vào/đầu ra/hạn/acceptance criteria ở `doc/phan_cong.md`. Repo public cho phép xem và clone, nhưng không tự cấp quyền push.
+- Bản setup sạch, không chứa thay đổi model/baseline, nằm trên nhánh `phuc/team-setup-docs`; hai commit setup đã cherry-pick từ nhánh `phuc/team-setup`. Nhánh `phuc/team-setup` cũ vẫn được giữ nguyên.
+- PR review tài liệu: [#5](https://github.com/PhucBeossss123/an-y/pull/5). PR chưa merge vào `main`; review/tích hợp còn chờ.

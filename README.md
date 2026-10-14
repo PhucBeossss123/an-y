@@ -1,14 +1,19 @@
 # Ẩn Ý — iSarcasmEval
 
-Repo chung của nhóm 4 người cho bài toán phát hiện mỉa mai trên iSarcasmEval tiếng Anh, Subtask A. Repo hiện ở chế độ private; thành viên cần được Phúc mời và chấp nhận lời mời bằng tài khoản riêng trước khi clone.
+Repo chung của nhóm 4 người cho bài toán phát hiện mỉa mai trên iSarcasmEval tiếng Anh, Subtask A. Repo được chuyển sang public và xác minh qua GitHub API ngày 12/10/2026. Mọi người có thể xem và clone; muốn push trực tiếp vẫn cần được thêm làm collaborator bằng tài khoản GitHub đã xác nhận.
 
 ## Bắt đầu tại đây
 
 - [Cách tham gia nhóm và quy trình review trước khi push](doc/cach_lam.md)
 - [Giao diện dữ liệu, split và prediction dùng chung](doc/giao_dien.md)
 - [Phân công và yêu cầu đề tài](doc/phan_cong.md)
+- [Tạo/cập nhật task bằng Issue Form](.github/ISSUE_TEMPLATE/team-task.yml) · [Issue tracker](https://github.com/PhucBeossss123/an-y/issues)
+- Task: [Phúc #1](https://github.com/PhucBeossss123/an-y/issues/1) · [Huy #2](https://github.com/PhucBeossss123/an-y/issues/2) · [Tuấn #3](https://github.com/PhucBeossss123/an-y/issues/3) · [Kiệt #4](https://github.com/PhucBeossss123/an-y/issues/4)
+- [PR review tài liệu thiết lập](https://github.com/PhucBeossss123/an-y/pull/5) — chưa merge.
 - [Rule của repo](AGENTS.md)
 - [Trạng thái hiện tại của từng phần](doc/review.md)
+
+Branch protection của `main` chưa xác minh được; xem ghi chú kiểm tra mới nhất trong [hướng dẫn cộng tác](doc/cach_lam.md).
 
 ## Kết quả Phúc
 
