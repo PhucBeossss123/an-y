@@ -10,7 +10,7 @@ Mỗi mẫu có các trường:
 | `text` | chuỗi | Văn bản tiếng Anh cần phân loại; giữ nguyên phủ định và emoji |
 | `label` | số nguyên 0/1 | `0 = sincere/không mỉa mai`, `1 = sarcastic/mỉa mai` |
 
-Chỉ đưa `text` vào mô hình. Không dùng nhãn, `rephrase` hay chú giải làm đặc trưng. Phần Phúc hiện dùng adapter tạm đọc `tweet` từ train và file test chính thức; chưa coi split validation seed 42 là split chung. Huy bàn giao loader/split cố định thì cả nhóm thay adapter và chạy lại các kết quả cần thiết.
+Chỉ đưa `text` vào mô hình. Không dùng nhãn, `rephrase` hay chú giải làm đặc trưng. Nhánh `huy/data-bert` ghi split seed 42 thành danh sách ID; loader trả `sample_id`, `text`, `label` và kiểm tra checksum trước khi nạp. Phần Phúc có thể dùng cùng danh sách ID để chạy lại các kết quả cần thiết.
 
 ## Đầu ra dự đoán
 
@@ -23,6 +23,7 @@ Báo Macro-F1 và F1 lớp sarcastic thành hai cột riêng, cùng precision/re
 ## Trạng thái split hiện tại
 
 - Official train: 3,468 mẫu; official test: 1,400 mẫu.
-- Validation của Phúc: 694 mẫu, tách phân tầng seed 42 từ official train để phát triển; **tạm, chưa dùng so sánh chính thức**.
-- Không có text trùng giữa official train và official test. Có một text trùng qua fit/validation tạm và các nhóm trùng train có nhãn mâu thuẫn; xem `results/phuc/README.md` và `reports/data_audit.json`.
-- Loader/split chung của Huy: **đang chờ bàn giao**.
+- Split chung hiện tại: 2,774 mẫu train và 694 mẫu validation, tách phân tầng một lần từ official train với seed 42; ID được lưu trong `data/splits/shared_split_seed42.csv`.
+- Official test gồm 1,400 mẫu và không nằm trong file split.
+- Audit split seed 42 phát hiện một text trùng qua fit/validation (`train:3067`, `train:3068`) và 5 nhóm train lặp có nhãn xung đột. Không có text trùng train/test; không mẫu nào bị tự động xóa hoặc đổi nhãn.
+- BERT-base đã có pipeline ba seed; kết quả huấn luyện/checkpoint chưa được tạo trong môi trường CPU hiện tại.

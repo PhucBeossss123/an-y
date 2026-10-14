@@ -1,0 +1,2 @@
+/data/splits/*.csv text eol=lf
+/data/splits/*.json text eol=lf
