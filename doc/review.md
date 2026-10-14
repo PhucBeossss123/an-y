@@ -19,4 +19,11 @@
 | Tuấn | RoBERTa-base and shared evaluation metrics | Waiting for GitHub username, invitation acceptance and handoff |
 | Kiệt | DistilBERT, demo and slide integration | Waiting for GitHub username, invitation acceptance and handoff |
 
-No collaborator invitations have been sent. No member-submitted code has been received. The `huy/data-bert` implementation is prepared by Phúc at the user's request; it is reviewed and committed in this handoff branch, with the exact `head_sha` recorded below before any push.
+No collaborator invitations have been sent. No member-submitted code has been received. The `huy/data-bert` implementation is prepared by Phúc at the user's request; the reviewed code commit and checks are recorded below.
+
+## Phúc review — `huy/data-bert` — 14/10/2026
+
+- Reviewed implementation commit: `de52d58d5610f8b2ae0c8a4fec0e595a0a545a83`.
+- Read the complete branch diff. No blocking code issue found in source checksum validation, ID-only split serialization, text/label-only BERT inputs, validation-based epoch selection, test separation, or single-text prediction.
+- Checks run: `compileall` passed; both new CLI `--help` commands passed; shared loader returned the expected 2,774/694 rows with only `sample_id`, `text`, and `label`; official test loader returned 1,400 rows; source and split SHA checks passed; new code files stayed below 500 lines; `git diff --check` and `git show --check` passed; prediction function loaded the local pilot checkpoint and returned a binary label.
+- Training evidence is limited to seed 13, epoch 1 validation: Macro-F1 `0.4349`, sarcastic F1 `0.0115`, confusion matrix `[[521, 0], [172, 1]]`. Training stopped before epoch 2 completed on CPU. Seeds 42 and 2026, final three-seed metrics, and official-test evaluation remain undone; the pilot is not a final result.
