@@ -1,0 +1,45 @@
+{
+  "repository": "https://github.com/iabufarha/iSarcasmEval",
+  "source_revision": "dfc708b53bde1bb571abfb5692f63231c2232195",
+  "source_files": {
+    "train.En.csv": {
+      "source_path": "train/train.En.csv",
+      "sha256": "fde737b69caffbcf81ebe79858ad16ac21881573c308343cd5219c4f7a800ae7"
+    },
+    "task_A_En_test.csv": {
+      "source_path": "test/task_A_En_test.csv",
+      "sha256": "0ea25619ca3358ecc8440daac1b9bba4d18455bf5b76d874d8dd6a959e72fc49"
+    }
+  },
+  "split_file": "shared_split_seed42.csv",
+  "split_sha256": "f1a5118715a5387dc45dd86f797f86885ff60b3b308521aa8005da8befe1abaf",
+  "split_column_policy": "sample_id and split only; no text or annotation fields",
+  "method": "one stratified train_test_split of official train labels",
+  "seed": 42,
+  "validation_fraction": 0.2,
+  "rows": {
+    "train": 2774,
+    "validation": 694
+  },
+  "labels_by_split": {
+    "train": {
+      "0": 2080,
+      "1": 694
+    },
+    "validation": {
+      "0": 521,
+      "1": 173
+    }
+  },
+  "duplicate_audit": {
+    "exact_text_overlap_fit_validation_rows": 2,
+    "exact_text_overlap_fit_validation_sample_ids": [
+      "train:3067",
+      "train:3068"
+    ],
+    "repeated_official_train_rows": 20,
+    "repeated_text_groups_with_conflicting_labels": 5,
+    "policy": "report duplicates; do not remove or relabel rows automatically"
+  },
+  "official_test_policy": "kept separate; IDs are not in this split file"
+}

@@ -16,7 +16,7 @@ Repo chung của nhóm 4 người cho bài toán phát hiện mỉa mai trên iS
 - [Báo cáo phương pháp, kết quả và phân tích lỗi](https://github.com/PhucBeossss123/an-y/blob/phuc/baseline-zero-shot/doc/bao_cao_phuc.md)
 - [Chạy lại baseline và zero-shot](https://github.com/PhucBeossss123/an-y/blob/phuc/baseline-zero-shot/doc/cach_lam.md#chay-lai-phan-cua-phuc)
 
-Kết quả Phúc hiện dùng split phát triển tạm seed 42 vì split chung của Huy chưa được bàn giao. Official test đã chạy; các con số trên trang kết quả không thay thế kết quả chạy lại trên split nhóm.
+Kết quả Phúc hiện dùng split phát triển seed 42; split ID chung đã được chuẩn bị trên nhánh Huy và cần chạy lại kết quả Phúc theo split này trước khi so sánh nhóm. Official test đã chạy; các con số trên trang kết quả không thay thế kết quả chạy lại trên split nhóm.
 
 ## Nhánh và phần việc
 
@@ -29,4 +29,4 @@ Kết quả Phúc hiện dùng split phát triển tạm seed 42 vì split chung
 
 Tên tài khoản GitHub và lời mời của Huy, Tuấn, Kiệt còn chờ Phúc cung cấp/xác nhận. Chưa có code nào của các bạn được ghi nhận là đã nhận hoặc duyệt.
 
-Các phần BERT, RoBERTa, DistilBERT, demo, metric chung và kết quả so sánh toàn nhóm đang **chờ thành viên bàn giao**. Không điền số liệu thay cho họ.
+Loader/split chung và pipeline BERT-base có trong nhánh `huy/data-bert`; ba seed đã chạy đủ và kết quả validation/official-test được ghi tại `doc/cach_lam.md`. RoBERTa, DistilBERT, demo, metric chung và kết quả so sánh toàn nhóm vẫn **chờ bàn giao**. Không điền số liệu thay cho họ.

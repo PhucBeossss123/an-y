@@ -1,11 +1,17 @@
 """Small adapter for the official English Subtask A files."""
 
 from pathlib import Path
+import hashlib
+import json
 import warnings
 
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
+
+
+SHARED_SPLIT_FILE = Path("data/splits/shared_split_seed42.csv")
+SHARED_SPLIT_MANIFEST = Path("data/splits/manifest.json")
 
 
 def load_train(data_dir: str | Path) -> pd.DataFrame:
@@ -53,6 +59,47 @@ def provisional_split(data_dir: str | Path, seed: int = 42):
             RuntimeWarning,
         )
     return fit.reset_index(drop=True), validation.reset_index(drop=True)
+
+
+def load_shared_split(
+    data_dir: str | Path = "data/raw",
+    split_file: str | Path = SHARED_SPLIT_FILE,
+    manifest_file: str | Path = SHARED_SPLIT_MANIFEST,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Resolve committed train/validation IDs against the official training file."""
+    split_path = Path(split_file)
+    manifest = json.loads(Path(manifest_file).read_text(encoding="utf-8"))
+    for filename, record in manifest["source_files"].items():
+        source_path = Path(data_dir) / filename
+        digest = hashlib.sha256(source_path.read_bytes()).hexdigest()
+        if digest != record["sha256"]:
+            raise ValueError(f"Official source checksum mismatch: {source_path}")
+    digest = hashlib.sha256(split_path.read_bytes()).hexdigest()
+    if digest != manifest["split_sha256"]:
+        raise ValueError("Shared split checksum does not match its manifest")
+
+    source = load_train(data_dir)
+    split = pd.read_csv(split_path, dtype={"sample_id": str, "split": str})
+    if list(split.columns) != ["sample_id", "split"]:
+        raise ValueError("Shared split must contain only sample_id and split")
+    if split["sample_id"].duplicated().any():
+        raise ValueError("Shared split contains duplicate sample IDs")
+    if set(split["split"].unique()) != {"train", "validation"}:
+        raise ValueError("Shared split must define train and validation rows")
+
+    source_ids = set(source["sample_id"])
+    split_ids = set(split["sample_id"])
+    if source_ids != split_ids:
+        missing = sorted(source_ids - split_ids)[:5]
+        extra = sorted(split_ids - source_ids)[:5]
+        raise ValueError(
+            f"Shared split IDs do not match source; missing={missing}, extra={extra}"
+        )
+    assignments = split.set_index("sample_id")["split"]
+    row_splits = source["sample_id"].map(assignments)
+    fit = source.loc[row_splits.eq("train")].reset_index(drop=True)
+    validation = source.loc[row_splits.eq("validation")].reset_index(drop=True)
+    return fit, validation
 
 
 def save_errors(frame: pd.DataFrame, predictions, path: str | Path) -> None:
