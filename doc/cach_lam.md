@@ -110,6 +110,8 @@ Mỗi seed chọn epoch trên validation rồi mới chấm official test. Kết
 
 Metrics và predictions chi tiết nằm trong `outputs/bert/full_three_seed_20261014/` (Git ignore); checkpoint không được đưa vào Git. Đã rà cả ba output: mỗi file validation có 694 ID đúng thứ tự split, mỗi file test có đủ 1,400 ID và nhãn chuẩn; tính lại Macro-F1/F1 sarcastic từ prediction khớp metrics JSON. Run giữ nguyên official test, không dùng kết quả test để chọn epoch. Chỉ số test là kết quả trên split này, chưa thay thế đối chiếu với evaluator chung của nhóm. Metrics ghi `revision_requested` là `86b5e0934494bd15c9632b12f734a8a67f723594`, còn `revision_resolved` là `null` do thư viện không trả SHA resolved trong run.
 
+Lưu ý khi so sánh liên mô hình: kế hoạch nhóm đề xuất dùng chung seed `42, 123, 2026`, còn run BERT này dùng `13, 42, 2026`. Chốt cùng bộ seed với các chủ mô hình khác trước khi lập bảng so sánh cuối; nếu chọn bộ seed của kế hoạch thì cần chạy lại seed còn thiếu.
+
 ### Commit local và gửi bản review
 
 Trước khi code, lưu commit nền đang có:

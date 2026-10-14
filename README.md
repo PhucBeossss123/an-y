@@ -29,4 +29,4 @@ Kết quả Phúc hiện dùng split phát triển seed 42; split ID chung đã 
 
 Tên tài khoản GitHub và lời mời của Huy, Tuấn, Kiệt còn chờ Phúc cung cấp/xác nhận. Chưa có code nào của các bạn được ghi nhận là đã nhận hoặc duyệt.
 
-Loader/split chung và pipeline BERT-base có trong nhánh `huy/data-bert`; mới có pilot validation một seed, chưa có kết quả BERT cuối đủ ba seed hoặc official test. RoBERTa, DistilBERT, demo, metric chung và kết quả so sánh toàn nhóm vẫn **chờ bàn giao**. Không điền số liệu thay cho họ.
+Loader/split chung và pipeline BERT-base có trong nhánh `huy/data-bert`; ba seed đã chạy đủ và kết quả validation/official-test được ghi tại `doc/cach_lam.md`. RoBERTa, DistilBERT, demo, metric chung và kết quả so sánh toàn nhóm vẫn **chờ bàn giao**. Không điền số liệu thay cho họ.

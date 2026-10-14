@@ -26,4 +26,4 @@ Báo Macro-F1 và F1 lớp sarcastic thành hai cột riêng, cùng precision/re
 - Split chung hiện tại: 2,774 mẫu train và 694 mẫu validation, tách phân tầng một lần từ official train với seed 42; ID được lưu trong `data/splits/shared_split_seed42.csv`.
 - Official test gồm 1,400 mẫu và không nằm trong file split.
 - Audit split seed 42 phát hiện một text trùng qua fit/validation (`train:3067`, `train:3068`) và 5 nhóm train lặp có nhãn xung đột. Không có text trùng train/test; không mẫu nào bị tự động xóa hoặc đổi nhãn.
-- BERT-base đã có pipeline ba seed; kết quả huấn luyện/checkpoint chưa được tạo trong môi trường CPU hiện tại.
+- BERT-base đã chạy đủ ba seed trên PyTorch CPU; kết quả theo seed và mean ± độ lệch chuẩn mẫu nằm trong `doc/cach_lam.md`. Checkpoint và prediction chi tiết ở `outputs/bert/` chỉ lưu cục bộ, không đưa vào Git.
