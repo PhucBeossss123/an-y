@@ -75,14 +75,14 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe scripts\audit_data.py
 ```
 
-Không commit `.venv`, `data/raw`, cache hoặc checkpoint. Phần baseline/zero-shot của Phúc có lệnh riêng ở [Chạy lại phần của Phúc](#chay-lai-phan-cua-phuc). Loader/split và pipeline BERT được ghi bên dưới; thí nghiệm BERT thật và các model còn lại chưa được chạy trong môi trường này.
+Không commit `.venv`, `data/raw`, cache hoặc checkpoint. Phần baseline/zero-shot của Phúc có lệnh riêng ở [Chạy lại phần của Phúc](#chay-lai-phan-cua-phuc). Loader/split và pipeline BERT được ghi bên dưới; lượt BERT ba seed đã chạy đầy đủ trên PyTorch CPU. Các model còn lại chưa được chạy trong môi trường này.
 
 ### Loader/split chung và BERT-base — nhánh `huy/data-bert`
 
 - `scripts/create_shared_split.py` xác minh SHA-256 của official train/test theo `data/raw/manifest.json`, rồi tạo `data/splits/shared_split_seed42.csv`. File này chỉ có `sample_id` và tên split, không chứa text, rephrase hoặc annotation. Cấu hình hiện tại là một lần tách phân tầng 80/20 từ official train (seed 42); official test giữ nguyên riêng.
 - `an_y.data.load_shared_split()` kiểm tra checksum file split, kiểm tra ID đủ/trùng/ngoài nguồn và chỉ trả `sample_id`, `text`, `label`. Nhãn giữ `0 = sincere`, `1 = sarcastic`.
 - `scripts/train_bert.py` chạy BERT-base uncased với ba seed `13, 42, 2026`, max length 128, batch train 4, gradient accumulation 4, 3 epoch, AdamW learning rate `2e-5`. Mỗi seed chọn epoch theo validation Macro-F1, dùng F1 sarcastic để phân xử hòa; sau khi chốt checkpoint theo validation mới đánh giá official test. Bảng tóm tắt dùng độ lệch chuẩn mẫu (ddof=1) qua ba seed.
-- Checkpoint và metric/prediction sinh ra nằm trong `outputs/bert/` và bị Git ignore. Model Hugging Face `bert-base-uncased` được khóa ở revision `86b5e0934494bd15c9632b12f734a8a67f723594`; có thể thay revision bằng `--revision <commit-sha>`. Metrics lưu revision đã phân giải.
+- Checkpoint và metric/prediction sinh ra nằm trong `outputs/bert/` và bị Git ignore. Model Hugging Face `bert-base-uncased` được khóa ở revision `86b5e0934494bd15c9632b12f734a8a67f723594`; có thể thay revision bằng `--revision <commit-sha>`. Run này lưu revision được yêu cầu; thư viện trả `revision_resolved: null`, nên không ghi nhận một resolved SHA riêng trong metrics.
 - Hàm `an_y.bert.predict_bert(text, checkpoint_dir)` dự đoán một câu, trả nhãn 0/1 và không gọi đầu ra là xác suất hiệu chỉnh.
 
 Lệnh chạy:
@@ -93,7 +93,22 @@ Lệnh chạy:
 .\.venv\Scripts\python.exe scripts\train_bert.py --seeds 13 42 2026
 ```
 
-Tại lần bàn giao này split đã được tạo và kiểm tra: nguồn iSarcasmEval revision `dfc708b53bde1bb571abfb5692f63231c2232195`; SHA-256 train `fde737b69caffbcf81ebe79858ad16ac21881573c308343cd5219c4f7a800ae7`; SHA-256 official test `0ea25619ca3358ecc8440daac1b9bba4d18455bf5b76d874d8dd6a959e72fc49`; SHA-256 split `f1a5118715a5387dc45dd86f797f86885ff60b3b308521aa8005da8befe1abaf`. Phân bố fit `2774` (2080 nhãn 0, 694 nhãn 1), validation `694` (521 nhãn 0, 173 nhãn 1), official test `1400`. Audit ghi nhận một text trùng qua fit/validation (`train:3067`, `train:3068`) và 5 nhóm text lặp có nhãn xung đột trong official train; không xóa hoặc đổi nhãn. Máy này có PyTorch `2.5.1+cpu`, không có CUDA trong PyTorch. Đã tải BERT revision `86b5e0934494bd15c9632b12f734a8a67f723594` và chạy pilot seed 13, epoch 1: validation Macro-F1 `0.4349`, F1 sarcastic `0.0115`, confusion matrix `[[521, 0], [172, 1]]`. Lượt chạy bị dừng trước khi hoàn tất epoch 2 do thời gian CPU; đây không phải kết quả cuối, không đánh giá official test, và không có bộ ba seed hoàn chỉnh. Đã thử cài wheel PyTorch CUDA 12.4 chính thức `2.51 GB` vào `.venv`; sau hơn 2.5 phút không có tiến độ tải nên dừng, và kiểm tra lại vẫn là `2.5.1+cpu`. Checkpoint pilot chỉ nằm cục bộ trong `outputs/bert/` (Git ignore).
+Tại lần bàn giao này split đã được tạo và kiểm tra: nguồn iSarcasmEval revision `dfc708b53bde1bb571abfb5692f63231c2232195`; SHA-256 train `fde737b69caffbcf81ebe79858ad16ac21881573c308343cd5219c4f7a800ae7`; SHA-256 official test `0ea25619ca3358ecc8440daac1b9bba4d18455bf5b76d874d8dd6a959e72fc49`; SHA-256 split `f1a5118715a5387dc45dd86f797f86885ff60b3b308521aa8005da8befe1abaf`. Phân bố fit `2774` (2080 nhãn 0, 694 nhãn 1), validation `694` (521 nhãn 0, 173 nhãn 1), official test `1400`. Audit ghi nhận một text trùng qua fit/validation (`train:3067`, `train:3068`) và 5 nhóm text lặp có nhãn xung đột trong official train; không xóa hoặc đổi nhãn. Máy này có PyTorch `2.5.1+cpu`, không có CUDA trong PyTorch. Lượt pilot seed 13 epoch 1 trước đây là lần chạy chưa hoàn chỉnh và không dùng làm kết quả cuối. Sau đó đã chạy đủ ba seed `13, 42, 2026`, mỗi seed tối đa 3 epoch, dùng lệnh:
+
+```powershell
+.\.venv\Scripts\python.exe -u scripts\train_bert.py --output-dir outputs\bert\full_three_seed_20261014
+```
+
+Mỗi seed chọn epoch trên validation rồi mới chấm official test. Kết quả dưới đây là Macro-F1 / F1 sarcastic; mỗi dòng test có 1,400 mẫu:
+
+| Seed | Epoch chọn | Validation Macro-F1 | Validation F1 sarcastic | Test Macro-F1 | Test F1 sarcastic |
+|---:|---:|---:|---:|---:|---:|
+| 13 | 3 | 0.5504 | 0.2407 | 0.5483 | 0.1933 |
+| 42 | 2 | 0.6133 | 0.4362 | 0.5729 | 0.3465 |
+| 2026 | 3 | 0.5884 | 0.3358 | 0.5963 | 0.3125 |
+| Trung bình ± SD mẫu | — | 0.5841 ± 0.0317 | 0.3376 ± 0.0977 | 0.5725 ± 0.0240 | 0.2841 ± 0.0804 |
+
+Metrics và predictions chi tiết nằm trong `outputs/bert/full_three_seed_20261014/` (Git ignore); checkpoint không được đưa vào Git. Đã rà cả ba output: mỗi file validation có 694 ID đúng thứ tự split, mỗi file test có đủ 1,400 ID và nhãn chuẩn; tính lại Macro-F1/F1 sarcastic từ prediction khớp metrics JSON. Run giữ nguyên official test, không dùng kết quả test để chọn epoch. Chỉ số test là kết quả trên split này, chưa thay thế đối chiếu với evaluator chung của nhóm. Metrics ghi `revision_requested` là `86b5e0934494bd15c9632b12f734a8a67f723594`, còn `revision_resolved` là `null` do thư viện không trả SHA resolved trong run.
 
 ### Commit local và gửi bản review
 
