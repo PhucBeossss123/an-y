@@ -1,0 +1,29 @@
+{
+  "method": "zero_shot",
+  "prompt_id": "original",
+  "split": "provisional_validation_seed_42",
+  "checkpoint": "cross-encoder/nli-deberta-v3-small",
+  "candidate_labels": [
+    "sarcastic",
+    "sincere"
+  ],
+  "hypothesis_template": "This text is {}.",
+  "score_semantics": "mutually exclusive NLI scores normalized over the two candidate labels; not calibrated probabilities",
+  "n": 694,
+  "macro_f1": 0.4925399976809509,
+  "f1_sarcastic": 0.3148558758314856,
+  "precision_sincere": 0.7548076923076923,
+  "recall_sincere": 0.6026871401151631,
+  "precision_sarcastic": 0.25539568345323743,
+  "recall_sarcastic": 0.41040462427745666,
+  "confusion_matrix_labels_0_1": [
+    [
+      314,
+      207
+    ],
+    [
+      102,
+      71
+    ]
+  ]
+}

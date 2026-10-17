@@ -1,0 +1,6 @@
+﻿prompt_id,candidate_labels,label_to_id,hypothesis_template,split,n,macro_f1,f1_sarcastic,selected_by_validation
+explicit_negation,sarcastic | not sarcastic,"{""not sarcastic"": 0, ""sarcastic"": 1}",The author is being {}.,provisional_validation_seed_42,694,0.5487837948215306,0.27636363636363637,True
+social_post,a sarcastic social media post | a sincere social media post,"{""a sarcastic social media post"": 1, ""a sincere social media post"": 0}",This is {}.,provisional_validation_seed_42,694,0.5016044725239762,0.3551020408163265,False
+statement,sarcastic statement | sincere statement,"{""sarcastic statement"": 1, ""sincere statement"": 0}",The author intended this as a {}.,provisional_validation_seed_42,694,0.49955858071907533,0.36182902584493043,False
+original,sarcastic | sincere,"{""sarcastic"": 1, ""sincere"": 0}",This text is {}.,provisional_validation_seed_42,694,0.4925399976809509,0.3148558758314856,False
+ironic_or_literal,sarcastic or ironic | literal and sincere,"{""literal and sincere"": 0, ""sarcastic or ironic"": 1}",The tone of this text is {}.,provisional_validation_seed_42,694,0.30717428087986465,0.4010152284263959,False

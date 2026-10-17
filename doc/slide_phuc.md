@@ -5,7 +5,7 @@
 - iSarcasmEval English Subtask A; phân loại sarcastic / sincere.
 - Giao diện chung: `sample_id`, `text`, `label`; chỉ tweet vào đặc trưng; không dùng rephrase hay annotation.
 - Baseline: word TF-IDF unigram/bigram + Linear SVM; vectorizer fit trên train; chọn cấu hình trên validation.
-- Split hiện tại đang chờ Huy: validation tạm phân tầng seed 42; test chính thức được giữ riêng.
+- Split chung của Huy đã có; kết quả SVM/zero-shot hiện vẫn dùng validation tạm phân tầng seed 42 và cần chạy lại trước khi chốt so sánh nhóm. Test chính thức được giữ riêng.
 - Metric chính: Macro-F1 và F1 sarcastic (báo riêng), precision/recall và confusion matrix.
 
 **Validation tạm:** 3,468 train → 2,774 fit / 694 validation (seed 42); 1,400 test chính thức.
@@ -17,7 +17,7 @@
 
 ## Slide 2 — Zero-shot, prompt và lỗi
 
-- Checkpoint NLI: `facebook/bart-large-mnli`; zero-shot pipeline, không fine-tune.
+- Checkpoint NLI: `cross-encoder/nli-deberta-v3-small` (revision `fa2804872c3b4bd748f38c0185cc85775361e735`); zero-shot pipeline, không fine-tune.
 - So sánh 5 cách diễn đạt; ánh xạ candidate label → `0/1` được khai báo tường minh.
 - Chọn bằng Macro-F1 validation; sau đó so sánh prompt gốc và prompt được chọn trên cùng test.
 - Bàn luận theo kết quả thực: phủ định, emoji, ngữ cảnh/nghĩa bề mặt; ví dụ phải có ID và nhãn thật/dự đoán.

@@ -4,22 +4,23 @@
 
 - Reviewed branch: `phuc/baseline-zero-shot`.
 - Scope: shared fallback data adapter, TF-IDF + LinearSVC, NLI zero-shot prompts, saved predictions/metrics and handover docs.
-- Verified commit at last handover: `7c9b9b5827f79093a61bb32d50e9044eb0ca435b` (`Add baseline and zero-shot experiments`).
-- Checks previously run: environment check, `compileall`, data audit, baseline validation and official-test evaluation, five zero-shot validation prompts, original/selected official-test evaluation, `scripts/verify_outputs.py`, result packaging, and `git show --check`.
-- Data limitation: the branch now contains a fixed stratified 80/20 ID split (seed 42), generated from official train. Phúc's baseline results still need rerunning with it. One exact text crosses fit/validation (`train:3067`, `train:3068`); repeated train text includes five conflicting-label groups. No source train/test text overlap. Nothing was silently removed.
+- Original experiment commit: `7c9b9b5827f79093a61bb32d50e9044eb0ca435b` (`Add baseline and zero-shot experiments`). The shared framework commit is `ceffa5d` (`Set up shared team workflow`).
+- Checks run for this handoff: `python -m compileall -q src scripts`; `scripts/verify_outputs.py` (all baseline/zero-shot rows and saved SVM reload passed); `scripts/package_results.py` (9 append-only run records); one-sentence SVM and zero-shot predictions; `git diff --cached --check` / `git show --check`.
+- Giới hạn dữ liệu: kết quả SVM và zero-shot đã lưu của Phúc dùng split phát triển phân tầng 80/20 seed 42 từ official train. Split chung của Huy hiện đã có trong `main`; cần chạy lại phần Phúc trên split này trước khi so sánh mô hình cuối cùng. Một cặp văn bản trùng nằm hai phía fit/validation (`train:3067`, `train:3068`); train có năm nhóm văn bản trùng với nhãn xung đột. Không có văn bản trùng giữa train/test; không tự xóa mẫu.
+- Khi tích hợp, giữ nguyên `load_shared_split()` của Huy và bổ sung tùy chọn split tạm cho việc tái tạo kết quả cũ. Lệnh validation SVM/zero-shot mặc định dùng split chung; dùng `--validation-split provisional` để tái tạo run lịch sử. `compileall`, giới hạn 500 dòng, hai lệnh CLI `--help`, và `git diff --check` đều đạt; chưa chạy lại thí nghiệm hay ghi nhận metric mới từ việc tích hợp.
 - Runtime: experiments ran on CPU with Python 3.12.7, pandas 2.2.3, scikit-learn 1.5.2, PyTorch 2.5.1+cpu and Transformers 4.46.3. The RTX 3050 was not usable by the installed CPU-only PyTorch wheel; the large CUDA wheel download was stopped after 2.5 minutes without progress.
-- GitHub: authenticated as `PhucBeossss123`; private repo `PhucBeossss123/an-y` exists. `main` is the shared starting branch. Phúc's result branch is `phuc/baseline-zero-shot`; exact SHAs and links are reported after verification.
+- GitHub: `PhucBeossss123/an-y` is public and `main` is the default branch. Phúc's result branch is `phuc/baseline-zero-shot`; exact SHAs and links are reported after verification.
 
 ## Team handoff status
 
 | Owner | Deliverable | Status |
 |---|---|---|
-| Phúc | TF-IDF + SVM, zero-shot, prompt comparison and results | Implemented and evaluated on provisional validation and official test; rerun needed when the shared split arrives |
-| Huy | Shared data loader/split and BERT-base | Split, loader, and three-seed BERT pipeline on `huy/data-bert`; all three seeds completed with validation-based epoch selection and official-test evaluation. Per-seed and aggregate results are recorded in `doc/cach_lam.md`; checkpoints and predictions remain local under ignored `outputs/bert/`. |
-| Tuấn | RoBERTa-base and shared evaluation metrics | Waiting for GitHub username, invitation acceptance and handoff |
-| Kiệt | DistilBERT, demo and slide integration | Waiting for GitHub username, invitation acceptance and handoff |
+| Phúc | TF-IDF + SVM, zero-shot, so sánh prompt và kết quả | Đã chạy trên validation tạm và official test; còn phải chạy lại trên split chung của Huy |
+| Huy | Data loader/split chung và BERT-base | Split chung và kết quả BERT đã có trong `main`; bộ seed báo cáo là `42, 123, 2026`, chọn epoch theo validation trước khi đánh giá official test. Checkpoint và prediction chi tiết vẫn ở `outputs/bert/` bị Git ignore. |
+| Tuấn | RoBERTa-base và metric đánh giá chung | Username Phúc cung cấp: `tuantran11022006-ops`; lần rà remote gần nhất không thấy branch/PR hoặc bàn giao |
+| Kiệt | DistilBERT, demo và ghép slide | Username Phúc cung cấp: `3ndly`; lần rà remote gần nhất không thấy branch/PR hoặc bàn giao |
 
-No collaborator invitations have been sent. No member-submitted code has been received. The `huy/data-bert` implementation is prepared by Phúc at the user's request; the reviewed code commit and checks are recorded below.
+Trạng thái lời mời collaborator và quyền truy cập chưa được xác minh. PR báo cáo Huy đã được review và merge; lần rà remote gần nhất không thấy nhánh đóng góp của Kiệt hoặc Tuấn.
 
 ## Phúc review ban đầu — `huy/data-bert` — 14/10/2026
 
@@ -36,3 +37,10 @@ No collaborator invitations have been sent. No member-submitted code has been re
 - `git diff --check` passed. Model checkpoints, metrics JSON, and prediction CSVs are ignored under `outputs/bert/`; only the summarized real results and command are tracked in the handover documentation.
 - Remaining disclosed limitations: the fixed split contains an exact-text pair across fit/validation and repeated training text with conflicting labels; no rows were removed or relabeled. `revision_resolved` is `null` in run metrics although the requested model revision is pinned to `86b5e0934494bd15c9632b12f734a8a67f723594`. The group plan proposes seeds `42, 123, 2026`, while this completed run used `13, 42, 2026`; agree on a common seed set before cross-model comparison and rerun if required. These do not block this reviewed branch; see `doc/cach_lam.md` for the result table and details.
 - Follow-up documentation review found stale pilot-only status in `README.md` and `doc/giao_dien.md`; those statements have now been updated to match the completed run. The implementation is unchanged from the reviewed commit above.
+
+## Review PR #7 của Huy — 17/10/2026
+
+- PR `BERT: bổ sung kết quả seed 123 và báo cáo`, head `953b62b0e1eb94e6487971afd09f75312cffe012`, đã được merge vào `main` tại `7c0ae01c2d53c39f85826032437d6eeba8674440`.
+- Review phát hiện default `scripts/train_bert.py` còn dùng seed `13, 42, 2026` trong khi báo cáo so sánh `42, 123, 2026`. Đã đổi default sang bộ seed báo cáo; đồng thời xóa dòng trắng thừa cuối `doc/bao_cao_bert.md`.
+- `git diff --check` sạch trước khi merge. Các phép tính tổng hợp và precision/recall khớp với các số đã công bố; prediction chi tiết của seed 123 không có trong workspace nên chưa tính lại metric từ CSV nguồn.
+- Không thấy branch hoặc PR của Kiệt (`3ndly`) hay Tuấn (`tuantran11022006-ops`) trong danh sách remote đã rà.

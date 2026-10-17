@@ -1,0 +1,35 @@
+{
+    "method":  "Transformers zero-shot-classification",
+    "checkpoint":  "cross-encoder/nli-deberta-v3-small",
+    "model_revision":  "fa2804872c3b4bd748f38c0185cc85775361e735",
+    "prompt_id":  "explicit_negation",
+    "candidate_labels":  [
+                             "sarcastic",
+                             "not sarcastic"
+                         ],
+    "label_to_id":  {
+                        "sarcastic":  1,
+                        "not sarcastic":  0
+                    },
+    "hypothesis_template":  "The author is being {}.",
+    "multi_label":  false,
+    "batch_size":  4,
+    "hypothesis_max_length":  256,
+    "selected_by_validation":  true,
+    "run_id":  "zero_shot-test-explicit_negation-20261007T095331664485Z",
+    "created_at_utc":  "2026-10-07T09:53:31.736681+00:00",
+    "dataset":  "English Subtask A; text and binary sarcastic label only",
+    "source_repository":  "https://github.com/iabufarha/iSarcasmEval",
+    "source_revision":  "dfc708b53bde1bb571abfb5692f63231c2232195",
+    "split":  "official_test",
+    "split_status":  "official test",
+    "n":  1400,
+    "prediction_sha256":  "a1f6a38ab0ae8348694b129545f50b69eaf67d86757a86f99ac4a96954453cf2",
+    "split_seed":  null,
+    "source_file_sha256":  {
+                               "task_A_En_test.csv":  "0ea25619ca3358ecc8440daac1b9bba4d18455bf5b76d874d8dd6a959e72fc49",
+                               "README.md":  "98c79b76a4b5dc0e3cc2fb4e9653048e6c9a7156d6e2b1eacacf296b7acebb30",
+                               "train.En.csv":  "fde737b69caffbcf81ebe79858ad16ac21881573c308343cd5219c4f7a800ae7",
+                               "LICENSE":  "f956625f01a15c08af3be7d32480d39d8302fc36f52075c484a004e8e849835f"
+                           }
+}

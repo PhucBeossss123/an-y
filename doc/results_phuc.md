@@ -1,5 +1,7 @@
 # Kết quả và phân tích lỗi phần Phúc
 
+Trang kết quả có artifact theo từng lượt tại [`results/phuc/README.md`](../results/phuc/README.md); báo cáo bàn giao chuẩn tại [`bao_cao_phuc.md`](bao_cao_phuc.md). Tệp này giữ bản tổng hợp chi tiết đã ghi từ lượt chạy trước.
+
 ## Cấu hình và trạng thái
 
 - Dữ liệu: iSarcasmEval English Subtask A; raw source revision `dfc708b53bde1bb571abfb5692f63231c2232195`.
@@ -70,4 +72,4 @@ Across these examples, both methods miss sarcasm conveyed by a positive surface 
 ## Data and split audit
 
 - No exact text overlap was found between official train and official test.
-- Train contains 20 rows belonging to exact-text duplicate groups, including five groups with conflicting labels; official test contains six repeated-text rows. One exact text appears on both sides of the temporary fit/validation split (`train:3067` and `train:3068`, both label 0). There is no exact text overlap between official train and test. These are disclosed and left untouched as required; Huy's fixed split and the conflicting duplicate labels should be reviewed before final reporting.
+- Train contains 20 rows belonging to exact-text duplicate groups, including five groups with conflicting labels; official test contains six repeated-text rows. One exact text appears on both sides of the temporary fit/validation split (`train:3067` and `train:3068`, both label 0). There is no exact text overlap between official train and test. These are disclosed and left untouched as required; Phúc's stored runs must be rerun on Huy's fixed split before final cross-model reporting.

@@ -1,0 +1,11 @@
+﻿method,prompt_id,split,sample_id,y_true,y_pred,error_group,manual_note
+baseline,,official_test,test:2,1,0,contextual_contradiction,The broken website is framed as a consequence of people wanting the service; the surface reads as a complaint.
+baseline,,official_test,test:4,0,1,emoji_or_short_text,A short sincere positive statement with an emoji is predicted as sarcastic.
+baseline,,official_test,test:20,0,1,emoji_or_short_text,A sincere sign-off with emojis is predicted as sarcastic; emoji alone is not a sarcasm cue.
+baseline,,official_test,test:21,1,0,surface_positive_sarcasm,Sarcastic praise about never making dirty moves conflicts with the intended criticism.
+baseline,,official_test,test:47,1,0,surface_positive_sarcasm,Ironic praise of a politician follows positive lexical cues.
+zero_shot,explicit_negation,official_test,test:1,0,1,insufficient_context,The one-word item lacks visible context; the model predicts sarcasm for a sincere example.
+zero_shot,explicit_negation,official_test,test:2,1,0,contextual_contradiction,The apparent statement about intent and a broken website is read literally.
+zero_shot,explicit_negation,official_test,test:20,0,1,emoji_or_short_text,A friendly night-time sign-off with emojis is predicted as sarcastic.
+zero_shot,explicit_negation,official_test,test:21,1,0,surface_positive_sarcasm,Hyperbolic sports praise is read as sincere without external context.
+zero_shot,explicit_negation,official_test,test:84,1,0,contextual_contradiction,Giving children sweets before bed is praised despite the contradictory expected consequence.

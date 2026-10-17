@@ -1,0 +1,23 @@
+{
+  "method": "tfidf_linear_svm",
+  "split": "provisional_validation_seed_42",
+  "C": 0.5,
+  "class_weight": "balanced",
+  "n": 694,
+  "macro_f1": 0.5524929253241655,
+  "f1_sarcastic": 0.27715355805243447,
+  "precision_sincere": 0.7733333333333333,
+  "recall_sincere": 0.8905950095969289,
+  "precision_sarcastic": 0.39361702127659576,
+  "recall_sarcastic": 0.2138728323699422,
+  "confusion_matrix_labels_0_1": [
+    [
+      464,
+      57
+    ],
+    [
+      136,
+      37
+    ]
+  ]
+}
