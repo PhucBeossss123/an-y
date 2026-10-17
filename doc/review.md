@@ -16,11 +16,21 @@
 | Owner | Deliverable | Status |
 |---|---|---|
 | Phúc | TF-IDF + SVM, zero-shot, so sánh prompt và kết quả | Đã chạy trên shared validation và official test; artifact ở `results/phuc/shared_seed42_20261017/` |
-| Huy | Data loader/split chung và BERT-base | Split và báo cáo BERT đã có trong `main`. Báo cáo nêu seed `42, 123, 2026`; prediction seed 123 chưa có trong workspace để xác minh lại. Checkpoint và prediction khác nằm dưới `outputs/bert/` và bị Git ignore. |
-| Tuấn | RoBERTa-base và metric đánh giá chung | Username Phúc cung cấp: `tuantran11022006-ops`; lần rà remote gần nhất không thấy branch/PR hoặc bàn giao |
-| Kiệt | DistilBERT, demo và ghép slide | Username Phúc cung cấp: `3ndly`; lần rà remote gần nhất không thấy branch/PR hoặc bàn giao |
+| Huy | Data loader/split chung và BERT-base | Split đã có trong `main`; seed 123 đã được chạy lại và ba seed `42, 123, 2026` được kiểm tra ID/nhãn/metric từ prediction CSV. |
+| Tuấn | RoBERTa-base và metric đánh giá chung | Không thấy branch/PR bàn giao trong lần rà remote; pipeline RoBERTa và bảng so sánh chung đã được hoàn thiện trong working tree này, xem `results/team/`. |
+| Kiệt | DistilBERT, demo và ghép slide | Không thấy branch/PR bàn giao trong lần rà remote; DistilBERT, demo local và slide tích hợp đã được hoàn thiện trong working tree này, xem `scripts/demo.py` và `doc/slide_nhom.md`. |
 
 Trạng thái lời mời collaborator và quyền truy cập chưa được xác minh. PR báo cáo Huy đã được review và merge; lần rà remote gần nhất không thấy nhánh đóng góp của Kiệt hoặc Tuấn.
+
+## Phúc review tích hợp mô hình nhóm — 18/10/2026
+
+- Huy/BERT: reran seed 123 using the pinned revision and common split; merged it with the existing seed 42 and 2026 artifacts only after source revision/checksum/split hash matched. `scripts/package_team_results.py` recomputed metrics from all validation/test predictions and confirmed exact sample-ID order and gold labels.
+- Tuấn/RoBERTa and common metrics: ran seeds 42/123/2026 using the shared runner; each checkpoint was selected on validation Macro-F1 before official-test prediction. Packager verified all 6 prediction files against the shared validation and official test.
+- Kiệt/DistilBERT and demo/slide: ran seeds 42/123/2026; packager verified all prediction files. Single-text inference uses local checkpoints, and the demo defaults to the architecture/seed selected by mean validation Macro-F1. Slide-ready integrated content is in `doc/slide_nhom.md`.
+- Selection: RoBERTa-base seed 42, selected by mean validation Macro-F1 `0.6151` across three seeds. Test scores were not used to select it. Three error groups and examples across all encoders are documented in `doc/team_errors.md`.
+- CPU-only PyTorch 2.5.1, Transformers 4.46.3, Python 3.12.7. Model revisions and official dataset checksums are recorded in per-model run metrics and `results/team/model_comparison.json`. Raw data/checkpoints remain ignored.
+- Final checks: package command passed and verified 18 validation/test prediction files across the 3×3 runs; `compileall`, the 500-line check (20 code files, largest 339 lines), CLI help, and `git diff --check` passed. CLI single-text prediction returned a binary label for each encoder. Local demo GET returned HTTP 200 with RoBERTa preselected; POST to the real RoBERTa checkpoint returned `sarcastic` (`y_pred=1`). The temporary server was stopped after the smoke check.
+- These are completed team-scope deliverables assembled in Phúc's working tree; they are not represented as new code submitted by Huy, Tuấn, or Kiệt. Collaborator invitation/access state remains unverified.
 
 ## Phúc review ban đầu — `huy/data-bert` — 14/10/2026
 

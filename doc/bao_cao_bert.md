@@ -21,11 +21,11 @@ Bộ seed báo cáo thống nhất theo kế hoạch chung: **42, 123, 2026**. Z
 | Seed | Epoch chọn | Validation Macro-F1 | Validation F1 sarcastic | Test Macro-F1 | Test F1 sarcastic |
 |---:|---:|---:|---:|---:|---:|
 | 42 | 2 | 0.6133 | 0.4362 | 0.5729 | 0.3465 |
-| 123 | 3 | 0.5967 | 0.3630 | 0.5916 | 0.3095 |
+| 123 | 3 | 0.5987 | 0.3673 | 0.5919 | 0.3112 |
 | 2026 | 3 | 0.5884 | 0.3358 | 0.5963 | 0.3125 |
-| **Trung bình ± SD mẫu** | — | **0.5995 ± 0.0127** | **0.3783 ± 0.0519** | **0.5869 ± 0.0124** | **0.3228 ± 0.0206** |
+| **Trung bình ± SD mẫu** | — | **0.6002 ± 0.0125** | **0.3798 ± 0.0513** | **0.5870 ± 0.0124** | **0.3234 ± 0.0200** |
 
-Các dòng seed 42 và 2026 được chép từ bảng đã làm tròn trong tài liệu ZIP; vì vậy trung bình và SD chung cũng là xấp xỉ từ các giá trị 4 chữ số đó. Kết quả seed 123 được tính lại từ predictions của lần chạy bổ sung. Trên test seed 123, precision/recall sarcastic lần lượt là 0.2876/0.3350; ma trận nhầm lẫn theo thứ tự nhãn `[0,1]` là `[[1034,166],[133,67]]`. Trong 200 mẫu mỉa mai ở test, mô hình bắt đúng 67 mẫu.
+Seed 42 và 2026 lấy từ artifact BERT local đã có; seed 123 được chạy bổ sung bằng cùng pinned revision, split và siêu tham số. Đã xác minh lại ID, nhãn và metric của cả ba seed từ prediction CSV. Trên test seed 123, precision/recall sarcastic lần lượt là 0.2869/0.3400; ma trận nhầm lẫn theo thứ tự nhãn `[0,1]` là `[[1031,169],[132,68]]`. Trong 200 mẫu mỉa mai ở test, mô hình bắt đúng 68 mẫu.
 
 ### Năm lỗi BERT trên official test
 

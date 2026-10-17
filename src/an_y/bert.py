@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import random
 from dataclasses import asdict, dataclass
+from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
@@ -30,7 +31,7 @@ class BertConfig:
     learning_rate: float = 2e-5
     weight_decay: float = 0.01
     warmup_ratio: float = 0.1
-    seeds: tuple[int, ...] = (13, 42, 2026)
+    seeds: tuple[int, ...] = (42, 123, 2026)
     mixed_precision: bool = True
 
 
@@ -181,7 +182,8 @@ def _train_seed(
         score = _score_pair(validation_metrics)
         print(
             f"seed={seed} epoch={epoch} validation_macro_f1={score[0]:.4f} "
-            f"validation_f1_sarcastic={score[1]:.4f}"
+            f"validation_f1_sarcastic={score[1]:.4f}",
+            flush=True,
         )
         if score > best_score:
             best_score = score
@@ -246,7 +248,7 @@ def run_bert(
     output_dir: str | Path = "outputs/bert",
     config: BertConfig | None = None,
 ) -> dict:
-    """Train three seeds, select epochs on validation, then evaluate official test."""
+    """Fine-tune an encoder for each seed, select epochs on validation, then test."""
     config = config or BertConfig()
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
@@ -255,7 +257,7 @@ def run_bert(
     split_metadata = json.loads(Path(split_manifest).read_text(encoding="utf-8"))
     tokenizer_args = {"revision": config.revision} if config.revision else {}
     tokenizer = AutoTokenizer.from_pretrained(config.model_name, **tokenizer_args)
-    resolved_revision = tokenizer.init_kwargs.get("_commit_hash")
+    resolved_revision = tokenizer.init_kwargs.get("_commit_hash") or config.revision
     results = []
     for seed in config.seeds:
         result = _train_seed(fit, validation, tokenizer, config, seed, output)
@@ -301,23 +303,37 @@ def run_bert(
     return metrics
 
 
-def predict_bert(text: str, checkpoint_dir: str | Path) -> dict:
-    """Predict one text, returning a binary label without a probability claim."""
-    checkpoint = Path(checkpoint_dir)
+@lru_cache(maxsize=1)
+def _load_prediction_model(checkpoint_path: str):
+    checkpoint = Path(checkpoint_path)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     tokenizer = AutoTokenizer.from_pretrained(checkpoint)
     model = AutoModelForSequenceClassification.from_pretrained(checkpoint).to(device)
     config_path = checkpoint / "training_config.json"
-    max_length = 128
+    training_config = {}
     if config_path.exists():
-        max_length = json.loads(config_path.read_text(encoding="utf-8"))["max_length"]
+        training_config = json.loads(config_path.read_text(encoding="utf-8"))
+    return (
+        tokenizer,
+        model,
+        device,
+        int(training_config.get("max_length", 128)),
+        training_config.get("model_name", "bert-base-uncased"),
+    )
+
+
+def predict_bert(text: str, checkpoint_dir: str | Path) -> dict:
+    """Predict one text, returning a binary label without a probability claim."""
+    tokenizer, model, device, max_length, method = _load_prediction_model(
+        str(Path(checkpoint_dir).resolve())
+    )
     encoded = tokenizer(text, truncation=True, max_length=max_length, return_tensors="pt")
     encoded = {key: value.to(device) for key, value in encoded.items()}
     model.eval()
     with torch.no_grad():
         prediction = int(model(**encoded).logits.argmax(dim=-1).item())
     return {
-        "method": "bert_base_uncased",
+        "method": method,
         "y_pred": prediction,
         "label": "sarcastic" if prediction == 1 else "sincere",
     }

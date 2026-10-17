@@ -16,7 +16,7 @@ Repo chung của nhóm 4 người cho bài toán phát hiện mỉa mai trên iS
 - [Báo cáo phương pháp, kết quả và phân tích lỗi](https://github.com/PhucBeossss123/an-y/blob/phuc/baseline-zero-shot/doc/bao_cao_phuc.md)
 - [Chạy lại baseline và zero-shot](https://github.com/PhucBeossss123/an-y/blob/phuc/baseline-zero-shot/doc/cach_lam.md#chay-lai-phan-cua-phuc)
 
-Kết quả Phúc hiện dùng split phát triển seed 42; split ID chung đã được chuẩn bị trên nhánh Huy và cần chạy lại kết quả Phúc theo split này trước khi so sánh nhóm. Official test đã chạy; các con số trên trang kết quả không thay thế kết quả chạy lại trên split nhóm.
+Kết quả Phúc đã được chạy lại trên shared split seed 42; xem `results/phuc/shared_seed42_20261017/`. Bảng so sánh encoder và prediction ID-only đã được xác minh trên cùng validation/official test tại `results/team/`.
 
 ## Nhánh và phần việc
 
@@ -27,6 +27,6 @@ Kết quả Phúc hiện dùng split phát triển seed 42; split ID chung đã 
 | Tuấn | `tuan/roberta-evaluation` | RoBERTa-base, metric chung, tổng hợp |
 | Kiệt | `kiet/distilbert-demo` | DistilBERT, demo, ghép slide |
 
-Tên tài khoản GitHub và lời mời của Huy, Tuấn, Kiệt còn chờ Phúc cung cấp/xác nhận. Chưa có code nào của các bạn được ghi nhận là đã nhận hoặc duyệt.
+Username do Phúc cung cấp: Huy `qhuyy04`, Tuấn `tuantran11022006-ops`, Kiệt `3ndly`; trạng thái collaborator/invitation chưa được xác minh. Lần rà remote trước đó không thấy nhánh/PR mới của Tuấn hoặc Kiệt. Các phần hoàn thiện trong working tree này là tích hợp theo phân công, không được ghi nhận là code do họ gửi.
 
-Loader/split chung và pipeline BERT-base có trong nhánh `huy/data-bert`; ba seed đã chạy đủ và kết quả validation/official-test được ghi tại `doc/cach_lam.md`. RoBERTa, DistilBERT, demo, metric chung và kết quả so sánh toàn nhóm vẫn **chờ bàn giao**. Không điền số liệu thay cho họ.
+Loader/split chung và BERT-base đã được kiểm tra trên seeds `42, 123, 2026`; các phần RoBERTa, DistilBERT, evaluator so sánh, demo và nội dung slide tích hợp đã được hoàn thiện trong working tree. Xem `results/team/`, `doc/team_errors.md`, `doc/slide_nhom.md` và trạng thái review mới nhất trong `doc/review.md`. Checkpoints và dữ liệu raw vẫn bị Git ignore.

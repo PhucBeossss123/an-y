@@ -63,11 +63,11 @@ Các ví dụ dưới đây là dự đoán sai thật trên official test. Nh�
 | Zero-shot `explicit_negation` | `test:21` | 1 → 0 | Khen bề mặt | Lời khen thể thao cường điệu được đọc là chân thành khi thiếu bối cảnh ngoài câu. |
 | Zero-shot `explicit_negation` | `test:84` | 1 → 0 | Ngữ cảnh/đối lập | Khen việc cho trẻ ăn kẹo trước giờ ngủ dù hệ quả được kỳ vọng trái ngược. |
 
-## Hạn chế và phần nhóm đang chờ
+## Hạn chế và tích hợp nhóm
 
 - Shared split seed 42 có một văn bản trùng qua fit/validation (`train:3067`, `train:3068`, cùng nhãn 0); train có 20 dòng trong nhóm text lặp và 5 nhóm có nhãn xung đột. Không có text trùng giữa official train/test. Không tự ý xóa mẫu; chi tiết ở [audit dữ liệu](../reports/data_audit.json).
-- Chưa có nhánh/bàn giao để review DistilBERT/demo của Kiệt hoặc RoBERTa/metric tích hợp của Tuấn; xem [review log](review.md).
-- Huy đã bàn giao split và BERT-base; báo cáo nêu seed `42, 123, 2026`, nhưng prediction chi tiết seed 123 chưa có trong workspace để kiểm tra lại. Chưa thấy bàn giao RoBERTa-base của Tuấn hoặc DistilBERT/demo của Kiệt; metric chung có hàm trong repo nhưng chưa có kết quả so sánh RoBERTa/BERT/DistilBERT để tổng hợp.
+- Các phần BERT, RoBERTa, DistilBERT, metric so sánh, demo và slide đã được tích hợp trong working tree; kết quả và trạng thái kiểm tra ở [review log](review.md), [bảng nhóm](../results/team/README.md), [phân tích lỗi](team_errors.md) và [slide tổng hợp](slide_nhom.md). Không thấy branch/PR mới từ Tuấn hoặc Kiệt trong lần rà remote, nên không gán các file tích hợp này là code họ đã gửi.
+- Hạn chế mô hình và phân tích lỗi encoder: [team error analysis](team_errors.md). Checkpoints và dữ liệu raw không được commit.
 
 ## Nội dung slide phần Phúc
 

@@ -15,8 +15,8 @@ Nguồn chính thức: `https://github.com/iabufarha/iSarcasmEval`; tải Subtas
 1. Tạo `.venv`, cài `requirements.txt`, tải dữ liệu bằng `scripts/download_data.py`.
 2. Baseline thử 6 cấu hình nhỏ (`C` 0.5/1/2, class weight none/balanced); chọn Macro-F1 validation, phân xử bằng F1 sarcastic. TF-IDF được fit trong pipeline trên train của split chung. Sau khi chọn, test script refit trên toàn bộ official train và đánh giá official test.
 3. Zero-shot dùng `cross-encoder/nli-deberta-v3-small` (revision `fa2804872c3b4bd748f38c0185cc85775361e735`), nhãn gốc `sarcastic`/`sincere` và bốn biến thể đã lưu trong `config/prompts.json`. Model card xác nhận zero-shot Transformers pipeline, huấn luyện trên SNLI/MultiNLI và Apache-2.0. Cùng checkpoint/split/batch cho tất cả. Chọn prompt theo Macro-F1 validation, dùng F1 sarcastic khi hòa. Test chạy sau lựa chọn và so sánh prompt gốc với prompt được chọn trên cùng official test.
-4. Metric hiện tính bằng scikit-learn qua `src/an_y/metrics.py`; chưa có PR/evaluator riêng từ Tuấn để đối chiếu. Bảng validation và bảng test tách riêng.
-5. Prediction lỗi được lưu theo ID; cần Phúc đọc từng lỗi, thêm giải thích có căn cứ và xem các nhóm phủ định, emoji, ngữ cảnh trước khi đưa nhận xét vào báo cáo.
+4. Metric dùng chung tính bằng scikit-learn qua `src/an_y/metrics.py`; `scripts/package_team_results.py` kiểm tra lại metric từ từng file dự đoán và tạo bảng validation/test tách riêng.
+5. Prediction lỗi được lưu theo ID; phân tích lỗi chung đã được hoàn thiện tại `doc/team_errors.md`, theo checkpoint chọn validation và ba nhóm lỗi có ví dụ từ cả ba encoder.
 
 ## Tình trạng bằng chứng
 
@@ -218,3 +218,44 @@ Lệnh đã chạy:
 .\.venv\Scripts\python.exe -m an_y.baseline --data-dir data\raw --output-dir outputs\shared_review_20261017 --split test --validation-split shared
 .\.venv\Scripts\python.exe -m an_y.zero_shot test --data-dir data\raw --output-dir outputs\shared_review_20261017
 ```
+
+## Tích hợp cuối BERT/RoBERTa/DistilBERT — 18/10/2026
+
+Run dùng Python 3.12.7, pandas 2.2.3, scikit-learn 1.5.2, PyTorch `2.5.1+cpu`, Transformers 4.46.3. Máy có RTX 3050 nhưng PyTorch hiện tại là CPU-only. Cấu hình chung: split hash `f1a5118715a5387dc45dd86f797f86885ff60b3b308521aa8005da8befe1abaf`, train-fit 2.774, validation 694, official test 1.400; labels `0=sincere`, `1=sarcastic`; 3 epoch tối đa, max length 128, batch train/eval 4/8, accumulation 4, learning rate `2e-5`, seeds `42,123,2026`. Model revision và source SHA-256 nằm trong `outputs/team/<model>/metrics.json`; bảng đã đóng gói có model revision và metric ở `results/team/model_comparison.json`.
+
+Trong workspace này, BERT seed 123 được chạy bổ sung bằng đúng revision/split/config rồi ghép với seed 42/2026 artifact sẵn có; `scripts/merge_bert_team_runs.py` kiểm tra source revision, file checksums và split hash trước khi ghép. RoBERTa và DistilBERT chạy đủ 3 seed bằng runner chung.
+
+```powershell
+$env:HF_HOME='outputs/hf_cache'
+.\.venv\Scripts\python.exe scripts\train_transformer.py bert --output-dir outputs\team\bert --seeds 123
+.\.venv\Scripts\python.exe scripts\merge_bert_team_runs.py
+.\.venv\Scripts\python.exe scripts\train_transformer.py roberta --output-dir outputs\team\roberta --seeds 42 123 2026
+.\.venv\Scripts\python.exe scripts\train_transformer.py distilbert --output-dir outputs\team\distilbert --seeds 42 123 2026
+.\.venv\Scripts\python.exe scripts\package_team_results.py
+.\.venv\Scripts\python.exe scripts\demo.py
+```
+
+Để tái chạy BERT từ đầu thay vì dùng hai artifact đã có, chạy `train_transformer.py bert --output-dir outputs\team\bert --seeds 42 123 2026` và bỏ bước merge. Package kiểm tra thứ tự ID, gold label, schema ID-only và tính lại metric từ mọi prediction validation/test. Chỉ metrics/predictions ID-only được ghi dưới `results/team/`; checkpoint và raw data vẫn bị ignore.
+
+| Encoder | Validation Macro-F1 (mean ± sample SD) | Validation F1 sarcastic | Test Macro-F1 | Test F1 sarcastic |
+|---|---:|---:|---:|---:|
+| BERT-base | 0.6002 ± 0.0125 | 0.3798 ± 0.0513 | 0.5870 ± 0.0124 | 0.3234 ± 0.0200 |
+| RoBERTa-base | **0.6151 ± 0.0386** | 0.3777 ± 0.0832 | **0.6168 ± 0.0295** | **0.3542 ± 0.0723** |
+| DistilBERT | 0.5597 ± 0.0438 | 0.2752 ± 0.0962 | 0.5717 ± 0.0236 | 0.2631 ± 0.0630 |
+
+RoBERTa seed 42 được chọn cho demo bằng mean validation Macro-F1 của encoder; không dùng test để chọn. Ba nhóm lỗi và tối thiểu năm ví dụ mỗi encoder ở `doc/team_errors.md`; nội dung slide tích hợp ở `doc/slide_nhom.md`.
+
+## Quy trình tích hợp BERT, RoBERTa, DistilBERT
+
+Cả ba encoder dùng loader/split chung, chỉ lấy `text` và `label`, cùng official test, 3 epoch, max length 128, batch 4, gradient accumulation 4, learning rate `2e-5`; seeds là `42, 123, 2026`. Mỗi seed chọn epoch bằng validation Macro-F1 (hòa thì F1 sarcastic), rồi mới chạy official test. Model weights/checkpoints và dữ liệu vẫn nằm trong `outputs/`/`data/raw/` (Git ignored). Base-model revisions được pin trong `scripts/train_transformer.py`.
+
+```powershell
+`$env:HF_HOME='outputs/hf_cache'
+.\.venv\Scripts\python.exe scripts\train_transformer.py bert --output-dir outputs\team\bert
+.\.venv\Scripts\python.exe scripts\train_transformer.py roberta --output-dir outputs\team\roberta
+.\.venv\Scripts\python.exe scripts\train_transformer.py distilbert --output-dir outputs\team\distilbert
+.\.venv\Scripts\python.exe scripts\package_team_results.py
+.\.venv\Scripts\python.exe scripts\demo.py
+```
+
+`package_team_results.py` checks sample ID order, gold labels, prediction schema and recomputed metrics against shared validation/official test. It writes only ID-only predictions, metrics and comparison tables under `results/team/`; checkpoint selection uses validation mean Macro-F1 only. See `doc/slide_nhom.md` for slide-ready team integration and `doc/team_errors.md` for ID-based error analysis.

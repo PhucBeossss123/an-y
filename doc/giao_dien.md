@@ -27,3 +27,4 @@ Báo Macro-F1 và F1 lớp sarcastic thành hai cột riêng, cùng precision/re
 - Official test gồm 1,400 mẫu và không nằm trong file split.
 - Audit split seed 42 phát hiện một text trùng qua fit/validation (`train:3067`, `train:3068`) và 5 nhóm train lặp có nhãn xung đột. Không có text trùng train/test; không mẫu nào bị tự động xóa hoặc đổi nhãn.
 - BERT-base đã chạy đủ ba seed trên PyTorch CPU; kết quả theo seed và mean ± độ lệch chuẩn mẫu nằm trong `doc/cach_lam.md`. Checkpoint và prediction chi tiết ở `outputs/bert/` chỉ lưu cục bộ, không đưa vào Git.
+- BERT/RoBERTa/DistilBERT hiện dùng cùng bộ seeds `42, 123, 2026`; bảng mean ± sample SD và prediction ID-only đã được xác minh tại `results/team/`. Demo local: `python scripts/demo.py`; tổng hợp slide tại `doc/slide_nhom.md`.

@@ -6,6 +6,7 @@ from pathlib import Path
 
 import joblib
 
+from .bert import predict_bert
 from .zero_shot import classify, make_pipeline, read_config
 
 
@@ -73,9 +74,12 @@ def predict_zero_shot(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("method", choices=("baseline", "zero-shot"))
+    parser.add_argument(
+        "method", choices=("baseline", "zero-shot", "bert", "roberta", "distilbert")
+    )
     parser.add_argument("--text", required=True, help="English text to classify")
     parser.add_argument("--output-dir", default="outputs")
+    parser.add_argument("--checkpoint", help="Fine-tuned transformer checkpoint directory")
     parser.add_argument(
         "--prompt-id",
         default="selected",
@@ -86,8 +90,30 @@ def main() -> None:
 
     if args.method == "baseline":
         result = predict_baseline(args.text, output_dir)
-    else:
+    elif args.method == "zero-shot":
         result = predict_zero_shot(args.text, args.prompt_id, output_dir)
+    else:
+        model_dir = {
+            "bert": "bert",
+            "roberta": "roberta",
+            "distilbert": "distilbert",
+        }[args.method]
+        if args.checkpoint:
+            checkpoint = Path(args.checkpoint)
+        else:
+            selection_path = Path("outputs/team") / model_dir / "selected_checkpoint.json"
+            if not selection_path.exists():
+                raise SystemExit(
+                    f"Missing {selection_path}; run scripts/package_team_results.py first."
+                )
+            checkpoint = Path(
+                json.loads(selection_path.read_text(encoding="utf-8"))["checkpoint"]
+            )
+        if not checkpoint.exists():
+            raise SystemExit(
+                f"Missing fine-tuned checkpoint {checkpoint}; train the model or pass --checkpoint."
+            )
+        result = predict_bert(args.text, checkpoint)
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
 
