@@ -25,7 +25,7 @@ def main() -> None:
     parser.add_argument("--gradient-accumulation-steps", type=int, default=4)
     parser.add_argument("--epochs", type=int, default=3)
     parser.add_argument("--learning-rate", type=float, default=2e-5)
-    parser.add_argument("--seeds", type=int, nargs="+", default=[13, 42, 2026])
+    parser.add_argument("--seeds", type=int, nargs="+", default=[42, 123, 2026])
     parser.add_argument("--no-mixed-precision", action="store_true")
     args = parser.parse_args()
 
