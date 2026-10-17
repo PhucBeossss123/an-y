@@ -46,7 +46,3 @@ Các ví dụ dưới đây lấy từ dự đoán seed 123; `test:N` là ID the
 - Có mẫu văn bản trùng và nhãn xung đột trong train; một cặp trùng nằm ở hai phía fit/validation. Việc giữ nguyên theo manifest giúp tái lập split nhưng có thể làm điểm số dao động và khiến cùng nội dung có tín hiệu giám sát không nhất quán.
 - Kết quả dựa trên một split train/validation cố định và một official test; ba seed thể hiện một phần biến thiên khởi tạo, không thay thế đánh giá trên bộ dữ liệu ngoài hoặc nhiều split độc lập.
 - Lượt chạy bổ sung seed 123 dùng CPU-only nên tốn thời gian. Log ghi revision đã yêu cầu nhưng `revision_resolved` là `null`; không có SHA resolved riêng do thư viện không trả trường này trong lần chạy.
-
-
-
-
