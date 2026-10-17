@@ -8,14 +8,14 @@ Phần này chỉ gồm TF-IDF + Linear SVM và zero-shot NLI cho iSarcasmEval t
 
 Nguồn chính thức: `https://github.com/iabufarha/iSarcasmEval`; tải Subtask A tiếng Anh gồm `train/train.En.csv` và `test/task_A_En_test.csv`. Script ghi revision nguồn, SHA-256, README và LICENSE vào `data/raw/manifest.json`. Dữ liệu được tải cục bộ, không đưa vào Git.
 
-**Split chung đã có:** Huy đã đưa loader và split ID-only vào `main`. Kết quả SVM/zero-shot hiện ghi trong tài liệu và `results/phuc/` vẫn dùng split phát triển tạm 80/20 seed 42; cần chạy lại các thí nghiệm Phúc theo split chung trước khi so sánh mô hình hoặc chốt kết luận. Official test vẫn được giữ riêng.
+**Split chung đã có:** Huy đã đưa loader và split ID-only vào `main`. Lượt SVM/zero-shot mới nhất đã chạy trên shared split seed 42; artifact nằm ở `results/phuc/shared_seed42_20261017/`. Các run cũ trong `results/phuc/runs/` vẫn giữ nhãn provisional. Official test được giữ riêng.
 
 ## Quy trình
 
 1. Tạo `.venv`, cài `requirements.txt`, tải dữ liệu bằng `scripts/download_data.py`.
 2. Baseline thử 6 cấu hình nhỏ (`C` 0.5/1/2, class weight none/balanced); chọn Macro-F1 validation, phân xử bằng F1 sarcastic. TF-IDF được fit trong pipeline trên train của split chung. Sau khi chọn, test script refit trên toàn bộ official train và đánh giá official test.
 3. Zero-shot dùng `cross-encoder/nli-deberta-v3-small` (revision `fa2804872c3b4bd748f38c0185cc85775361e735`), nhãn gốc `sarcastic`/`sincere` và bốn biến thể đã lưu trong `config/prompts.json`. Model card xác nhận zero-shot Transformers pipeline, huấn luyện trên SNLI/MultiNLI và Apache-2.0. Cùng checkpoint/split/batch cho tất cả. Chọn prompt theo Macro-F1 validation, dùng F1 sarcastic khi hòa. Test chạy sau lựa chọn và so sánh prompt gốc với prompt được chọn trên cùng official test.
-4. Metric tạm theo scikit-learn, chờ thay/đối chiếu với evaluator của Tuấn. Bảng validation và bảng test tách riêng.
+4. Metric hiện tính bằng scikit-learn qua `src/an_y/metrics.py`; chưa có PR/evaluator riêng từ Tuấn để đối chiếu. Bảng validation và bảng test tách riêng.
 5. Prediction lỗi được lưu theo ID; cần Phúc đọc từng lỗi, thêm giải thích có căn cứ và xem các nhóm phủ định, emoji, ngữ cảnh trước khi đưa nhận xét vào báo cáo.
 
 ## Tình trạng bằng chứng
@@ -24,13 +24,13 @@ Nguồn chính thức: `https://github.com/iabufarha/iSarcasmEval`; tải Subtas
 - Python 3.12.7 có tại Miniconda; Python alias mặc định không hoạt động. Máy có RTX 3050 với 4 GB VRAM; `nvidia-smi` xác nhận CUDA runtime 12.7. PyTorch trong `.venv` là bản CPU-only (`2.5.1+cpu`); thử cài wheel CUDA 12.4 chính thức nhưng dừng tải wheel 2.51 GB sau 2.5 phút không có tiến triển hiển thị.
 - Repo public đã được xác minh qua GitHub API trước đó. CLI hiện không xác thực được; trạng thái collaborator không được xác nhận trong lần review này.
 - Superpowers không có trong tool catalog; đã dùng quy trình tương đương đọc hiểu → lập kế hoạch → thực hiện → kiểm thử → review theo prompt.
-- Baseline validation và official test; 5 prompt zero-shot validation và prompt gốc/prompt chọn trên official test đã chạy. Kết quả đọc được trong `results/phuc/README.md`; báo cáo tại `doc/bao_cao_phuc.md`; file chi tiết tại `reports/` và từng run trong `results/phuc/runs/`.
-- Review: PR #7 của Huy đã được review, sửa và merge. Không thấy branch/PR của Kiệt hoặc Tuấn trong lần rà remote gần nhất. Kết quả Phúc đã lưu vẫn là kết quả tạm, cần chạy lại trên split chung.
-- Kiểm tra sau tích hợp: `python -m compileall -q src scripts` đạt; `scripts/check_line_limits.py` đạt (16 file, tối đa 500 dòng; file dài nhất `src/an_y/bert.py` có 323 dòng); lệnh `--help` của baseline và zero-shot chạy được, có `--validation-split {shared,provisional}`; `git diff --check` sạch. Chưa chạy lại thí nghiệm SVM/zero-shot trên split chung.
+- Baseline và 5 prompt zero-shot đã chạy trên shared validation; SVM, prompt gốc và prompt chọn đã chạy trên official test. Kết quả mới nằm trong `results/phuc/shared_seed42_20261017/`; các run lịch sử tại `results/phuc/runs/` giữ nhãn provisional. Báo cáo tại `doc/bao_cao_phuc.md`.
+- Review: PR #7 của Huy đã được review, sửa và merge. Không thấy branch/PR của Kiệt hoặc Tuấn trong lần rà remote gần nhất. Kết quả Phúc được chạy lại trên shared split theo log ngày 17/10/2026 bên dưới.
+- Kiểm tra sau tích hợp: `python -m compileall -q src scripts` đạt; `scripts/check_line_limits.py` đạt (16 file, tối đa 500 dòng; file dài nhất `src/an_y/bert.py` có 323 dòng); lệnh `--help` của baseline và zero-shot chạy được, có `--validation-split {shared,provisional}`; `git diff --check` sạch. Sau đó chạy lại SVM/zero-shot; xem metric và lệnh trong mục cuối.
 
 ## Kết quả thực nghiệm
 
-Baseline tốt nhất validation là `C=0.5`, `class_weight=balanced`; Macro-F1 `0.5525`, F1 sarcastic `0.2772`, confusion matrix `[[464,57],[136,37]]`. Kết quả chỉ dùng split phát triển tạm seed 42, cần chạy lại theo split chung của Huy. Tập train có 3,468 mẫu/867 sarcastic, validation tạm 694 mẫu/173 sarcastic, official test 1,400 mẫu/200 sarcastic. Audit phát hiện 20 dòng train thuộc các nhóm text lặp, trong đó 5 nhóm có nhãn xung đột; ID chi tiết ở `reports/data_audit.json`. Một text trùng qua fit/validation (`train:3067` và `train:3068`, cùng nhãn 0), không có text trùng giữa train/test. Không mẫu nào bị tự động xóa. Test có 6 dòng thuộc các nhóm text trùng nội bộ.
+Baseline tốt nhất validation là `C=0.5`, `class_weight=balanced`; Macro-F1 `0.5525`, F1 sarcastic `0.2772`, confusion matrix `[[464,57],[136,37]]`. Các con số trong đoạn này được ghi từ provisional run seed 42; kết quả shared run mới nhất được ghi riêng ở mục cuối. Tập train có 3,468 mẫu/867 sarcastic, validation 694 mẫu/173 sarcastic, official test 1,400 mẫu/200 sarcastic. Audit phát hiện 20 dòng train thuộc các nhóm text lặp, trong đó 5 nhóm có nhãn xung đột; ID chi tiết ở `reports/data_audit.json`. Một text trùng qua fit/validation (`train:3067` và `train:3068`, cùng nhãn 0), không có text trùng giữa train/test. Không mẫu nào bị tự động xóa. Test có 6 dòng thuộc các nhóm text trùng nội bộ.
 
 Zero-shot chọn `explicit_negation` bằng validation Macro-F1 `0.5488` (F1 sarcastic `0.2764`); prompt gốc đạt `0.4925` (`0.3149`). Trên official test, prompt gốc: Macro-F1 `0.4103`, F1 sarcastic `0.1083`; prompt chọn: `0.4476`, F1 sarcastic `0.0428`. Prompt chọn cao hơn Macro-F1 nhưng thấp hơn F1 sarcastic; lựa chọn không đổi theo test. Kết quả và ví dụ có trong `doc/results_phuc.md`.
 
@@ -197,3 +197,24 @@ Lệnh in JSON ra terminal, không tự ghi prediction vào bảng thực nghi�
 
 - Mỗi file code Python hoặc PowerShell trong `src/`, `scripts/` và `tests/` được giới hạn tối đa **500 dòng**. `scripts/check_line_limits.py` kiểm tra giới hạn này; thư viện cài trong `.venv/` nằm ngoài phạm vi. GitHub Actions chạy kiểm tra này trên mỗi push và pull request.
 - Chạy cục bộ bằng `& .\.venv\Scripts\python.exe scripts\check_line_limits.py`. Kết quả hiện tại: đạt; 13 file code, file dài nhất `scripts/package_results.py` có 263 dòng.
+
+## Kết quả Phúc trên shared split — 17/10/2026
+
+Đã chạy lại validation SVM và cả 5 prompt zero-shot trên `data/splits/shared_split_seed42.csv` (694 validation), sau đó đánh giá official test (1,400) sau khi chốt lựa chọn trên validation. Artifact prediction/metrics ID-only nằm ở [`results/phuc/shared_seed42_20261017/`](../results/phuc/shared_seed42_20261017/); không commit raw data hay model checkpoint.
+
+| Method / prompt | Split | Macro-F1 | F1 sarcastic | Precision / recall sarcastic |
+|---|---|---:|---:|---:|
+| TF-IDF + SVM | shared validation | 0.5525 | 0.2772 | 0.3936 / 0.2139 |
+| TF-IDF + SVM | official test | 0.5708 | 0.2826 | 0.2500 / 0.3250 |
+| Zero-shot `explicit_negation` (selected on validation) | shared validation | 0.5488 | 0.2764 | 0.3725 / 0.2197 |
+| Zero-shot `original` | official test | 0.4103 | 0.1083 | 0.0766 / 0.1850 |
+| Zero-shot `explicit_negation` | official test | 0.4476 | 0.0428 | 0.0460 / 0.0400 |
+
+Lệnh đã chạy:
+
+```powershell
+.\.venv\Scripts\python.exe -m an_y.baseline --data-dir data\raw --output-dir outputs\shared_review_20261017 --split validation --validation-split shared
+.\.venv\Scripts\python.exe -m an_y.zero_shot validate --data-dir data\raw --output-dir outputs\shared_review_20261017 --validation-split shared
+.\.venv\Scripts\python.exe -m an_y.baseline --data-dir data\raw --output-dir outputs\shared_review_20261017 --split test --validation-split shared
+.\.venv\Scripts\python.exe -m an_y.zero_shot test --data-dir data\raw --output-dir outputs\shared_review_20261017
+```

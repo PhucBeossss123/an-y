@@ -1,13 +1,14 @@
 # Kết quả Phúc — iSarcasmEval English Subtask A
 
-**Trạng thái:** baseline và zero-shot đã chạy; prompt được chọn trên validation; official test đã đánh giá. Validation hiện là split phát triển tạm seed 42, chưa phải split chung của nhóm.
+**Trạng thái:** lượt chạy mới nhất dùng shared validation split seed 42, chọn cấu hình/prompt trên validation rồi đánh giá official test. Các run cũ bên dưới được giữ nguyên và vẫn mang nhãn provisional.
 
 - [Báo cáo phương pháp và phân tích lỗi](../../doc/bao_cao_phuc.md)
 - [Hướng dẫn nhóm và chạy lại](../../doc/cach_lam.md)
-- [Tổng hợp CSV](summary.csv) · [So sánh prompt validation](prompt_comparison.csv) · [Lỗi ví dụ](errors.csv)
+- [Artifact shared split mới nhất](shared_seed42_20261017/README.md)
+- [CSV của run provisional đã đóng gói trước đó](summary.csv) · [So sánh prompt provisional](prompt_comparison.csv) · [Lỗi ví dụ](errors.csv)
 - [Manifest/checksum dữ liệu](../../reports/data_manifest.json) · [Audit dữ liệu](../../reports/data_audit.json)
 
-## Điểm chính
+## Run provisional đã đóng gói trước đó
 
 | Method/prompt | Split | n | Macro-F1 | F1 sarcastic | Precision / recall sarcastic |
 |---|---|---:|---:|---:|---:|
@@ -22,9 +23,8 @@ Zero-shot prompt selection uses **validation Macro-F1 only** (F1 sarcastic is th
 
 ## Trạng thái theo phương pháp
 
-- **TF-IDF + SVM:** đã chạy 694 mẫu validation tạm và 1,400 mẫu official test; test model refit trên toàn bộ official train.
-- **Zero-shot:** cả 5 prompt đã chạy trên 694 validation tạm; prompt gốc và prompt chọn chạy trên cùng 1,400 official test.
-- **Chạy lại theo split chung:** Huy đã bàn giao loader/split và BERT-base đã có kết quả trên bộ seed `42, 123, 2026` (xem `doc/cach_lam.md`). SVM/zero-shot bên dưới vẫn là các run tạm cũ và cần chạy lại trên split chung trước khi lập bảng so sánh cuối.
+- **Run records bên dưới:** các artifact lịch sử được đóng gói từ validation tạm; giữ nguyên để tái tạo kết quả cũ.
+- **Shared split:** kết quả SVM và zero-shot mới nhất, kèm predictions/metrics, nằm trong [`shared_seed42_20261017/`](shared_seed42_20261017/); BERT-base và trạng thái các phần nhóm khác xem `doc/cach_lam.md` và `doc/review.md`.
 - **Các mô hình RoBERTa/DistilBERT, demo và metric tích hợp:** chưa có branch/PR hoặc kết quả từ Tuấn/Kiệt trong lần rà remote gần nhất.
 
 ## Các lượt chạy và artifact

@@ -1,12 +1,12 @@
 # Kết quả và phân tích lỗi phần Phúc
 
-Trang kết quả có artifact theo từng lượt tại [`results/phuc/README.md`](../results/phuc/README.md); báo cáo bàn giao chuẩn tại [`bao_cao_phuc.md`](bao_cao_phuc.md). Tệp này giữ bản tổng hợp chi tiết đã ghi từ lượt chạy trước.
+Trang kết quả có artifact theo từng lượt tại [`results/phuc/README.md`](../results/phuc/README.md); báo cáo bàn giao chuẩn tại [`bao_cao_phuc.md`](bao_cao_phuc.md). Tệp này tổng hợp lượt chạy mới trên shared split seed 42 ngày 17/10/2026. Prediction CSV và JSON metric nằm tại [`results/phuc/shared_seed42_20261017/`](../results/phuc/shared_seed42_20261017/); các run provisional cũ vẫn được giữ trong `results/phuc/runs/`.
 
 ## Cấu hình và trạng thái
 
 - Dữ liệu: iSarcasmEval English Subtask A; raw source revision `dfc708b53bde1bb571abfb5692f63231c2232195`.
-- Train source: 3,468 (2,601 sincere, 867 sarcastic); tạm chia 2,774 fit / 694 validation theo stratified seed 42. Official test: 1,400 (1,200 sincere, 200 sarcastic).
-- Chờ split/loader chung Huy. Tất cả kết quả validation và lựa chọn prompt hiện tại tạm thời; cần chạy lại theo split nhóm trước khi kết luận cuối.
+- Train source: 3,468 (2,601 sincere, 867 sarcastic); shared split seed 42 gồm 2,774 fit / 694 validation. Official test: 1,400 (1,200 sincere, 200 sarcastic).
+- Đã chạy lại SVM và cả 5 zero-shot prompt trên shared validation; đã chốt lựa chọn rồi mới đánh giá official test. Kết quả đầy đủ và lệnh chạy được ghi trong `doc/cach_lam.md`.
 - Baseline: word TF-IDF unigram/bigram + LinearSVC; grid validation 6 cấu hình; chọn `C=0.5`, `class_weight=balanced` theo Macro-F1 rồi F1 sarcastic. Model được nạp lại, fit toàn bộ official train sau khi chọn, và lưu để dự đoán.
 - Zero-shot: `cross-encoder/nli-deberta-v3-small`, revision `fa2804872c3b4bd748f38c0185cc85775361e735`; pipeline `zero-shot-classification`, không fine-tune. Cả 5 prompt cùng model/split/batch; label mapping khai báo tường minh. `multi_label=False`, điểm chuẩn hóa theo hai candidate labels, không phải xác suất hiệu chỉnh.
 - Runtime: Python 3.12.7, pandas 2.2.3, scikit-learn 1.5.2, PyTorch 2.5.1+cpu, Transformers 4.46.3; GPU không dùng được do wheel hiện tại CPU-only.
@@ -17,7 +17,7 @@ Trang kết quả có artifact theo từng lượt tại [`results/phuc/README.m
 
 | Split | n | Macro-F1 | F1 sarcastic | Precision sarcastic | Recall sarcastic | Confusion matrix (0,1) |
 |---|---:|---:|---:|---:|---:|---|
-| Provisional validation | 694 | 0.5525 | 0.2772 | 0.3936 | 0.2139 | `[[464,57],[136,37]]` |
+| Shared validation, seed 42 | 694 | 0.5525 | 0.2772 | 0.3936 | 0.2139 | `[[464,57],[136,37]]` |
 | Official test | 1,400 | 0.5708 | 0.2826 | 0.2500 | 0.3250 | `[[1005,195],[135,65]]` |
 
 ## Zero-shot prompt comparison

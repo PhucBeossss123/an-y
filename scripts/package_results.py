@@ -197,11 +197,12 @@ def main():
     lines = [
         "# Kết quả Phúc — iSarcasmEval English Subtask A", "",
         f"**Trạng thái:** {status}", "",
+        "- [Lượt chạy mới nhất trên shared split seed 42](shared_seed42_20261017/README.md)",
         "- [Báo cáo phương pháp và phân tích lỗi](../../doc/bao_cao_phuc.md)",
         "- [Hướng dẫn nhóm và chạy lại](../../doc/cach_lam.md)",
         "- [Tổng hợp CSV](summary.csv) · [So sánh prompt validation](prompt_comparison.csv) · [Lỗi ví dụ](errors.csv)",
         "- [Manifest/checksum dữ liệu](../../reports/data_manifest.json) · [Audit dữ liệu](../../reports/data_audit.json)", "",
-        "## Điểm chính", "",
+        "## Run được đóng gói trong lần chạy này", "",
         "| Method/prompt | Split | n | Macro-F1 | F1 sarcastic | Precision / recall sarcastic |",
         "|---|---|---:|---:|---:|---:|",
     ]
@@ -218,7 +219,7 @@ def main():
         )
     lines.extend([
         "", "Zero-shot prompt selection uses **validation Macro-F1 only** (F1 sarcastic is the tie-break). "
-        "`explicit_negation` was selected. Test results are reported after the choice and were not used to change it.",
+        f"`{selected_prompt['id']}` was selected. Test results are reported after the choice and were not used to change it.",
         "", "## Trạng thái theo phương pháp", "",
         f"- **TF-IDF + SVM:** validation split `{baseline_validation['split']}`; official test split `{baseline_test['split']}`.",
         f"- **Zero-shot:** validation split `{validation_metrics[0]['split']}`; prompt được chọn trên validation. Test kết quả nằm trong các artifact trên.",

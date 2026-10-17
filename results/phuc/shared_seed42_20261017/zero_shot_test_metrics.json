@@ -1,0 +1,62 @@
+[
+  {
+    "method": "zero_shot",
+    "prompt_id": "original",
+    "split": "official_test",
+    "checkpoint": "cross-encoder/nli-deberta-v3-small",
+    "candidate_labels": [
+      "sarcastic",
+      "sincere"
+    ],
+    "hypothesis_template": "This text is {}.",
+    "score_semantics": "NLI scores normalized over the candidate labels; not calibrated probabilities",
+    "n": 1400,
+    "macro_f1": 0.41033715076515775,
+    "f1_sarcastic": 0.10834553440702782,
+    "precision_sincere": 0.822246455834242,
+    "recall_sincere": 0.6283333333333333,
+    "precision_sarcastic": 0.07660455486542443,
+    "recall_sarcastic": 0.185,
+    "confusion_matrix_labels_0_1": [
+      [
+        754,
+        446
+      ],
+      [
+        163,
+        37
+      ]
+    ],
+    "selected_on": "shared_validation_seed_42"
+  },
+  {
+    "method": "zero_shot",
+    "prompt_id": "explicit_negation",
+    "split": "official_test",
+    "checkpoint": "cross-encoder/nli-deberta-v3-small",
+    "candidate_labels": [
+      "sarcastic",
+      "not sarcastic"
+    ],
+    "hypothesis_template": "The author is being {}.",
+    "score_semantics": "NLI scores normalized over the candidate labels; not calibrated probabilities",
+    "n": 1400,
+    "macro_f1": 0.44760636773633233,
+    "f1_sarcastic": 0.0427807486631016,
+    "precision_sincere": 0.8433931484502447,
+    "recall_sincere": 0.8616666666666667,
+    "precision_sarcastic": 0.04597701149425287,
+    "recall_sarcastic": 0.04,
+    "confusion_matrix_labels_0_1": [
+      [
+        1034,
+        166
+      ],
+      [
+        192,
+        8
+      ]
+    ],
+    "selected_on": "shared_validation_seed_42"
+  }
+]

@@ -2,14 +2,13 @@
 
 ## Trạng thái
 
-Đã chạy baseline TF-IDF + LinearSVC và zero-shot NLI trên iSarcasmEval English Subtask A. Official test đã được đánh giá sau khi lựa chọn cấu hình trên validation. Các kết quả trong báo cáo dùng split phát triển tạm, phân tầng 80/20 từ official train với seed 42. Split chung của Huy hiện đã có trong `main`; cần chạy lại các thí nghiệm trên split này trước khi xem là kết quả so sánh cuối của nhóm.
+Đã chạy baseline TF-IDF + LinearSVC và zero-shot NLI trên iSarcasmEval English Subtask A. Validation và lựa chọn cấu hình dùng split chung seed 42 của nhóm; official test được đánh giá sau khi chốt cấu hình. Kết quả mới và prediction ID-only được lưu tại [`results/phuc/shared_seed42_20261017/`](../results/phuc/shared_seed42_20261017/). Các run cũ trong `results/phuc/runs/` vẫn được giữ riêng và mang nhãn provisional.
 
 | Phương pháp | Trạng thái | Dữ liệu |
 |---|---|---|
-| TF-IDF + SVM | Đã chạy validation, refit trên toàn bộ official train và chạy official test | 694 validation tạm; 1,400 test |
-| Zero-shot, 5 prompt | Đã chạy cả 5 prompt trên validation; chọn theo Macro-F1 | 694 validation tạm |
+| TF-IDF + SVM | Đã chạy validation trên split chung; refit trên official train và chạy official test | 694 validation; 1,400 test |
+| Zero-shot, 5 prompt | Đã chạy cả 5 prompt trên split chung; chọn theo Macro-F1 | 694 validation |
 | Zero-shot gốc và prompt chọn | Đã chạy cả hai trên cùng official test; không thay lựa chọn theo test | 1,400 test |
-| Chạy lại trên split chung | Chưa chạy; chờ loader/split Huy bàn giao | — |
 
 ## Thiết lập
 
@@ -23,7 +22,7 @@
 
 | Split | n | Macro-F1 | F1 sarcastic | P/R sarcastic | Confusion matrix (nhãn 0,1) |
 |---|---:|---:|---:|---:|---|
-| Validation tạm, seed 42 | 694 | 0.5525 | 0.2772 | 0.3936 / 0.2139 | `[[464,57],[136,37]]` |
+| Shared validation, seed 42 | 694 | 0.5525 | 0.2772 | 0.3936 / 0.2139 | `[[464,57],[136,37]]` |
 | Official test | 1,400 | 0.5708 | 0.2826 | 0.2500 / 0.3250 | `[[1005,195],[135,65]]` |
 
 ## Zero-shot — prompt selection trên validation
@@ -66,17 +65,18 @@ Các ví dụ dưới đây là dự đoán sai thật trên official test. Nh�
 
 ## Hạn chế và phần nhóm đang chờ
 
-- Split validation seed 42 là tạm. Một văn bản trùng qua fit/validation (`train:3067`, `train:3068`, cùng nhãn 0); train có 20 dòng trong nhóm text lặp và 5 nhóm có nhãn xung đột. Không có text trùng giữa official train/test. Không tự ý xóa mẫu; chi tiết ở [audit dữ liệu](../reports/data_audit.json).
-- Cần chạy lại phần Phúc trên split chung sau khi Huy bàn giao loader/split.
-- Các lượt fine-tune BERT-base, RoBERTa-base, DistilBERT đủ ba seed, metric chung, demo thật, báo cáo/slide tích hợp toàn nhóm chưa được bàn giao nên chưa chạy hoặc so sánh.
+- Shared split seed 42 có một văn bản trùng qua fit/validation (`train:3067`, `train:3068`, cùng nhãn 0); train có 20 dòng trong nhóm text lặp và 5 nhóm có nhãn xung đột. Không có text trùng giữa official train/test. Không tự ý xóa mẫu; chi tiết ở [audit dữ liệu](../reports/data_audit.json).
+- Chưa có nhánh/bàn giao để review DistilBERT/demo của Kiệt hoặc RoBERTa/metric tích hợp của Tuấn; xem [review log](review.md).
+- Huy đã bàn giao split và BERT-base; báo cáo nêu seed `42, 123, 2026`, nhưng prediction chi tiết seed 123 chưa có trong workspace để kiểm tra lại. Chưa thấy bàn giao RoBERTa-base của Tuấn hoặc DistilBERT/demo của Kiệt; metric chung có hàm trong repo nhưng chưa có kết quả so sánh RoBERTa/BERT/DistilBERT để tổng hợp.
 
 ## Nội dung slide phần Phúc
 
-1. **Dữ liệu và baseline:** Subtask A, giao diện `sample_id/text/label`, TF-IDF + LinearSVC; nêu split validation tạm và điểm baseline 0.5525/0.2772 (validation), 0.5708/0.2826 (test), theo thứ tự Macro-F1/F1 sarcastic.
+1. **Dữ liệu và baseline:** Subtask A, giao diện `sample_id/text/label`, TF-IDF + LinearSVC; nêu shared validation seed 42 và điểm baseline 0.5525/0.2772 (validation), 0.5708/0.2826 (test), theo thứ tự Macro-F1/F1 sarcastic.
 2. **Zero-shot và lỗi:** 5 prompt; chọn theo Macro-F1 validation; trên test prompt gốc 0.4103/0.1083, prompt chọn 0.4476/0.0428; lưu ý Macro-F1 tăng còn F1 sarcastic giảm. Minh họa câu mỉa mai có bề mặt tích cực và false positive có emoji.
 
 ## Tệp chi tiết và tái lập
 
+- [Metrics và prediction của lượt shared split](../results/phuc/shared_seed42_20261017/README.md)
 - [Trang kết quả và các run đã đóng gói](../results/phuc/README.md)
 - [Bảng tổng hợp CSV](../results/phuc/summary.csv)
 - [So sánh prompt validation](../results/phuc/prompt_comparison.csv)

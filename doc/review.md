@@ -6,8 +6,8 @@
 - Scope: shared fallback data adapter, TF-IDF + LinearSVC, NLI zero-shot prompts, saved predictions/metrics and handover docs.
 - Original experiment commit: `7c9b9b5827f79093a61bb32d50e9044eb0ca435b` (`Add baseline and zero-shot experiments`). The shared framework commit is `ceffa5d` (`Set up shared team workflow`).
 - Checks run for this handoff: `python -m compileall -q src scripts`; `scripts/verify_outputs.py` (all baseline/zero-shot rows and saved SVM reload passed); `scripts/package_results.py` (9 append-only run records); one-sentence SVM and zero-shot predictions; `git diff --cached --check` / `git show --check`.
-- Giới hạn dữ liệu: kết quả SVM và zero-shot đã lưu của Phúc dùng split phát triển phân tầng 80/20 seed 42 từ official train. Split chung của Huy hiện đã có trong `main`; cần chạy lại phần Phúc trên split này trước khi so sánh mô hình cuối cùng. Một cặp văn bản trùng nằm hai phía fit/validation (`train:3067`, `train:3068`); train có năm nhóm văn bản trùng với nhãn xung đột. Không có văn bản trùng giữa train/test; không tự xóa mẫu.
-- Khi tích hợp, giữ nguyên `load_shared_split()` của Huy và bổ sung tùy chọn split tạm cho việc tái tạo kết quả cũ. Lệnh validation SVM/zero-shot mặc định dùng split chung; dùng `--validation-split provisional` để tái tạo run lịch sử. `compileall`, giới hạn 500 dòng, hai lệnh CLI `--help`, và `git diff --check` đều đạt; chưa chạy lại thí nghiệm hay ghi nhận metric mới từ việc tích hợp.
+- Tại thời điểm review ban đầu, các kết quả SVM/zero-shot đã lưu dùng split phát triển phân tầng 80/20 seed 42 từ official train; follow-up chạy shared split được ghi ở mục cuối. Một cặp văn bản trùng nằm hai phía fit/validation (`train:3067`, `train:3068`); train có năm nhóm văn bản trùng với nhãn xung đột. Không có văn bản trùng giữa train/test; không tự xóa mẫu.
+- Khi tích hợp, giữ nguyên `load_shared_split()` của Huy và bổ sung tùy chọn split tạm cho việc tái tạo kết quả cũ. Lệnh validation SVM/zero-shot mặc định dùng split chung; dùng `--validation-split provisional` để tái tạo run lịch sử. `compileall`, giới hạn 500 dòng, hai lệnh CLI `--help`, và `git diff --check` đều đạt. Thí nghiệm mới chạy sau đó theo mục follow-up dưới đây.
 - Runtime: experiments ran on CPU with Python 3.12.7, pandas 2.2.3, scikit-learn 1.5.2, PyTorch 2.5.1+cpu and Transformers 4.46.3. The RTX 3050 was not usable by the installed CPU-only PyTorch wheel; the large CUDA wheel download was stopped after 2.5 minutes without progress.
 - GitHub: `PhucBeossss123/an-y` is public and `main` is the default branch. Phúc's result branch is `phuc/baseline-zero-shot`; exact SHAs and links are reported after verification.
 
@@ -15,8 +15,8 @@
 
 | Owner | Deliverable | Status |
 |---|---|---|
-| Phúc | TF-IDF + SVM, zero-shot, so sánh prompt và kết quả | Đã chạy trên validation tạm và official test; còn phải chạy lại trên split chung của Huy |
-| Huy | Data loader/split chung và BERT-base | Split chung và kết quả BERT đã có trong `main`; bộ seed báo cáo là `42, 123, 2026`, chọn epoch theo validation trước khi đánh giá official test. Checkpoint và prediction chi tiết vẫn ở `outputs/bert/` bị Git ignore. |
+| Phúc | TF-IDF + SVM, zero-shot, so sánh prompt và kết quả | Đã chạy trên shared validation và official test; artifact ở `results/phuc/shared_seed42_20261017/` |
+| Huy | Data loader/split chung và BERT-base | Split và báo cáo BERT đã có trong `main`. Báo cáo nêu seed `42, 123, 2026`; prediction seed 123 chưa có trong workspace để xác minh lại. Checkpoint và prediction khác nằm dưới `outputs/bert/` và bị Git ignore. |
 | Tuấn | RoBERTa-base và metric đánh giá chung | Username Phúc cung cấp: `tuantran11022006-ops`; lần rà remote gần nhất không thấy branch/PR hoặc bàn giao |
 | Kiệt | DistilBERT, demo và ghép slide | Username Phúc cung cấp: `3ndly`; lần rà remote gần nhất không thấy branch/PR hoặc bàn giao |
 
@@ -44,3 +44,10 @@ Trạng thái lời mời collaborator và quyền truy cập chưa được xá
 - Review phát hiện default `scripts/train_bert.py` còn dùng seed `13, 42, 2026` trong khi báo cáo so sánh `42, 123, 2026`. Đã đổi default sang bộ seed báo cáo; đồng thời xóa dòng trắng thừa cuối `doc/bao_cao_bert.md`.
 - `git diff --check` sạch trước khi merge. Các phép tính tổng hợp và precision/recall khớp với các số đã công bố; prediction chi tiết của seed 123 không có trong workspace nên chưa tính lại metric từ CSV nguồn.
 - Không thấy branch hoặc PR của Kiệt (`3ndly`) hay Tuấn (`tuantran11022006-ops`) trong danh sách remote đã rà.
+
+## Phúc rerun trên shared split — 17/10/2026
+
+- Đã chạy SVM validation và cả 5 prompt zero-shot trên `shared_validation_seed_42` (694 mẫu); sau khi chốt `C=0.5`, `class_weight=balanced` và prompt `explicit_negation` theo validation Macro-F1, mới chấm official test (1,400 mẫu).
+- Kết quả mới được lưu trong `results/phuc/shared_seed42_20261017/`, gồm metrics JSON, prediction CSV ID-only, prompt comparison và summary. Không đưa raw text hay checkpoint vào Git.
+- Kết quả thật: SVM shared validation Macro-F1/F1 sarcastic `0.5525/0.2772`, official test `0.5708/0.2826`; zero-shot selected prompt shared validation `0.5488/0.2764`, official test `0.4476/0.0428`. Prompt gốc official test `0.4103/0.1083`. Lựa chọn không đổi theo test.
+- Kiểm tra cục bộ sau cập nhật: compileall, line limit, CLI help, và diff check đạt. Không tìm thấy branch/PR của Kiệt hoặc Tuấn trong remote branch list đang clone.

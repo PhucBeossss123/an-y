@@ -5,10 +5,10 @@
 - iSarcasmEval English Subtask A; phân loại sarcastic / sincere.
 - Giao diện chung: `sample_id`, `text`, `label`; chỉ tweet vào đặc trưng; không dùng rephrase hay annotation.
 - Baseline: word TF-IDF unigram/bigram + Linear SVM; vectorizer fit trên train; chọn cấu hình trên validation.
-- Split chung của Huy đã có; kết quả SVM/zero-shot hiện vẫn dùng validation tạm phân tầng seed 42 và cần chạy lại trước khi chốt so sánh nhóm. Test chính thức được giữ riêng.
+- Kết quả SVM/zero-shot đã chạy trên shared split seed 42 của Huy; official test được giữ riêng và chỉ đánh giá sau khi chốt cấu hình/prompt bằng validation.
 - Metric chính: Macro-F1 và F1 sarcastic (báo riêng), precision/recall và confusion matrix.
 
-**Validation tạm:** 3,468 train → 2,774 fit / 694 validation (seed 42); 1,400 test chính thức.
+**Shared split:** 3,468 train → 2,774 fit / 694 validation (seed 42); 1,400 test chính thức.
 
 | Kết quả | Macro-F1 | F1 sarcastic |
 |---|---:|---:|
@@ -21,7 +21,7 @@
 - So sánh 5 cách diễn đạt; ánh xạ candidate label → `0/1` được khai báo tường minh.
 - Chọn bằng Macro-F1 validation; sau đó so sánh prompt gốc và prompt được chọn trên cùng test.
 - Bàn luận theo kết quả thực: phủ định, emoji, ngữ cảnh/nghĩa bề mặt; ví dụ phải có ID và nhãn thật/dự đoán.
-- Giới hạn: score NLI không phải xác suất hiệu chỉnh; split tạm cần thay bằng split Huy.
+- Giới hạn: score NLI không phải xác suất hiệu chỉnh; shared split có một cặp text trùng qua fit/validation, được ghi rõ trong audit dữ liệu.
 
 | Prompt | Macro-F1 validation | F1 sarcastic validation |
 |---|---:|---:|
