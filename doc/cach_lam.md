@@ -76,7 +76,7 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe scripts\audit_data.py
 ```
 
-Không commit `.venv`, `data/raw`, cache hoặc checkpoint. Phần baseline/zero-shot của Phúc có lệnh riêng ở [Chạy lại phần của Phúc](#chay-lai-phan-cua-phuc). Loader/split và pipeline BERT được ghi bên dưới; lượt BERT ba seed đã chạy đầy đủ trên PyTorch CPU. Các model còn lại chưa được chạy trong môi trường này.
+Không commit `.venv`, `data/raw`, cache hoặc checkpoint. Phần baseline/zero-shot của Phúc có lệnh riêng ở [Chạy lại phần của Phúc](#chay-lai-phan-cua-phuc). Loader/split và pipeline BERT được ghi bên dưới. Cập nhật 18/10/2026: BERT, RoBERTa và DistilBERT đều đã có đủ ba seed trên PyTorch CPU; kết quả tích hợp ở `results/team/`.
 
 ### Loader/split chung và BERT-base — nhánh `huy/data-bert`
 
@@ -237,13 +237,13 @@ $env:HF_HOME='outputs/hf_cache'
 
 Để tái chạy BERT từ đầu thay vì dùng hai artifact đã có, chạy `train_transformer.py bert --output-dir outputs\team\bert --seeds 42 123 2026` và bỏ bước merge. Package kiểm tra thứ tự ID, gold label, schema ID-only và tính lại metric từ mọi prediction validation/test. Chỉ metrics/predictions ID-only được ghi dưới `results/team/`; checkpoint và raw data vẫn bị ignore.
 
-| Encoder | Validation Macro-F1 (mean ± sample SD) | Validation F1 sarcastic | Test Macro-F1 | Test F1 sarcastic |
+| Encoder | Validation Macro-F1 (mean ± sample SD) | Validation F1 sarcastic (mean ± SD) | Test Macro-F1 (mean ± SD) | Test F1 sarcastic (mean ± SD) |
 |---|---:|---:|---:|---:|
 | BERT-base | 0.6002 ± 0.0125 | 0.3798 ± 0.0513 | 0.5870 ± 0.0124 | 0.3234 ± 0.0200 |
 | RoBERTa-base | **0.6151 ± 0.0386** | 0.3777 ± 0.0832 | **0.6168 ± 0.0295** | **0.3542 ± 0.0723** |
 | DistilBERT | 0.5597 ± 0.0438 | 0.2752 ± 0.0962 | 0.5717 ± 0.0236 | 0.2631 ± 0.0630 |
 
-RoBERTa seed 42 được chọn cho demo bằng mean validation Macro-F1 của encoder; không dùng test để chọn. Ba nhóm lỗi và tối thiểu năm ví dụ mỗi encoder ở `doc/team_errors.md`; nội dung slide tích hợp ở `doc/slide_nhom.md`.
+RoBERTa seed 42 được chọn cho demo bằng mean validation Macro-F1 của encoder; không dùng test để chọn. Bốn nhóm lỗi gồm tương phản, emoji/từ vựng cảm xúc, ngữ cảnh và phủ định được phân tích ở `doc/team_errors.md`; nội dung slide tích hợp ở `doc/slide_nhom.md`.
 
 ## Quy trình tích hợp BERT, RoBERTa, DistilBERT
 
@@ -259,3 +259,15 @@ Cả ba encoder dùng loader/split chung, chỉ lấy `text` và `label`, cùng 
 ```
 
 `package_team_results.py` checks sample ID order, gold labels, prediction schema and recomputed metrics against shared validation/official test. It writes only ID-only predictions, metrics and comparison tables under `results/team/`; checkpoint selection uses validation mean Macro-F1 only. See `doc/slide_nhom.md` for slide-ready team integration and `doc/team_errors.md` for ID-based error analysis.
+
+## Dashboard Streamlit — 18/10/2026
+
+Dashboard trình bày báo cáo theo năm mục: kết luận/bảng chính, so sánh encoder, so sánh prompt, một số ví dụ lỗi chọn lọc, và thử câu tự nhập. Dữ liệu mô hình/prompt đọc từ `results/`; ví dụ lỗi ghép ID-only predictions với official test local; thử câu cần artifact/checkpoint trong `outputs/`. Mặc định chọn kiến trúc có mean validation Macro-F1 cao nhất (`outputs/team/selected_model.json`), hiện RoBERTa seed 42. Chạy trên cổng riêng 8502:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-app.txt
+$env:STREAMLIT_CONFIG_DIR = "$PWD\.streamlit"
+.\.venv\Scripts\python.exe -m streamlit run app.py --server.address 0.0.0.0 --server.port 8502
+```
+
+Kết quả kiểm tra ngày 18/10/2026: `py_compile` thành công; Streamlit AppTest render đủ năm mục không có exception; server đang bind `0.0.0.0:8502`. Cả `http://127.0.0.1:8502` và địa chỉ LAN hiện tại `http://192.168.1.116:8502` trả HTTP 200 từ máy chủ. Kiểm tra từ máy chủ không xác nhận được truy cập qua firewall từ máy thứ hai. Kiểm tra này không bấm nút suy luận; câu nhập tay không được thêm vào tập đánh giá. Báo cáo phân biệt Macro-F1 và F1 sarcastic, giải thích mean ± sample SD qua ba seed cho encoder, và ghi rõ SVM margin/zero-shot score không phải xác suất hiệu chỉnh.

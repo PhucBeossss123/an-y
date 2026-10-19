@@ -16,6 +16,10 @@
 | Ngữ cảnh/chủ đề làm lệch dự đoán | `test:7` (0) | 1 | 0 | 0 | Câu hỏi về chỉ số xG và phạt đền phụ thuộc ngữ cảnh bóng đá; BERT dự đoán sarcasm. |
 | Ngữ cảnh/chủ đề làm lệch dự đoán | `test:13` (0) | 1 | 1 | 1 | Câu về Chelsea/West Ham có thể bị hiểu là khen ngược; cả ba dự đoán sarcasm dù nhãn gold là sincere. |
 | Ngữ cảnh/chủ đề làm lệch dự đoán | `test:15` (0) | 1 | 1 | 1 | Khiếu nại bị từ chối thuốc đau đầu và nhấn mạnh tuổi “sixteen” bị cả ba gán sarcasm. |
+| Phủ định trong câu mỉa mai | `test:127` (1) | 1 | 1 | 0 | Lời phản đối quyết định tiêm nhắc lại kết thúc bằng “I think not”; DistilBERT bỏ lỡ dấu hiệu phủ định. |
+| Phủ định và khẳng định trái nghĩa | `test:176` (1) | 0 | 0 | 0 | Câu hỏi tu từ về năng lực chính quyền dùng phủ định rồi khẳng định mọi thứ “great”; cả ba mô hình đọc quá sát nghĩa bề mặt. |
+| Phủ định mỉa mai nhấn mạnh | `test:246` (1) | 1 | 0 | 0 | Mẫu dùng “don't want” và “not at all” để thể hiện mong muốn trái với lời khen bề mặt; RoBERTa/DistilBERT bỏ lỡ ý mỉa mai. |
+| Cấu trúc “not like ... or anything” | `test:281` (1) | 1 | 0 | 0 | Câu phủ định giả định mang ý chê bai nhân vật; RoBERTa/DistilBERT đọc như lời đồng tình. |
 
 ## Ví dụ lỗi theo kiến trúc
 

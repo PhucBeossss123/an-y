@@ -101,7 +101,7 @@ def main() -> None:
             "architecture": name,
             "model_name": metrics["model_name"],
             "revision_requested": metrics["revision_requested"],
-            "revision_resolved": metrics["revision_resolved"] or metrics["revision_requested"],
+            "revision_resolved": metrics["revision_resolved"],
             "validation_macro_f1_mean": mean_std(seeds, "validation", "macro_f1")[0],
             "validation_macro_f1_std": mean_std(seeds, "validation", "macro_f1")[1],
             "validation_f1_sarcastic_mean": mean_std(seeds, "validation", "f1_sarcastic")[0],

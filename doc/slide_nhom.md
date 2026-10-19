@@ -40,6 +40,7 @@ Demo chọn **RoBERTa seed 42** bằng mean validation Macro-F1 cao nhất của
 - Bỏ lỡ tương phản/khen ngược: `test:9` (cả ba), `test:21` (cả ba), `test:2` (DistilBERT).
 - Bị từ vựng cảm xúc hoặc emoji chi phối: `test:10`, `test:11`, `test:14`, `test:28`.
 - Khó với ngữ cảnh/chủ đề và phàn nàn: `test:3`, `test:6`, `test:7`, `test:13`, `test:15`.
+- Bỏ lỡ phủ định trong câu mỉa mai: `test:176` (cả ba), `test:246` (RoBERTa/DistilBERT), `test:281` (RoBERTa/DistilBERT).
 - Bảng nhãn thật/dự đoán và nhận xét từng ví dụ: [team error analysis](team_errors.md). Các ID trỏ tới official test; không chép tweet vào slide/repo.
 
 ## Slide 6 — Demo, kết luận và giới hạn

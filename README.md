@@ -12,9 +12,10 @@ Repo chung của nhóm 4 người cho bài toán phát hiện mỉa mai trên iS
 
 ## Kết quả Phúc
 
-- **[Xem kết quả Phúc](https://github.com/PhucBeossss123/an-y/blob/phuc/baseline-zero-shot/results/phuc/README.md)** — bảng điểm, trạng thái, link tới prediction, prompt và từng run.
-- [Báo cáo phương pháp, kết quả và phân tích lỗi](https://github.com/PhucBeossss123/an-y/blob/phuc/baseline-zero-shot/doc/bao_cao_phuc.md)
-- [Chạy lại baseline và zero-shot](https://github.com/PhucBeossss123/an-y/blob/phuc/baseline-zero-shot/doc/cach_lam.md#chay-lai-phan-cua-phuc)
+- [Kết quả Phúc](results/phuc/README.md) — bảng điểm, prediction, prompt và run.
+- [Báo cáo phương pháp, kết quả và phân tích lỗi](doc/bao_cao_phuc.md)
+- [Chạy lại baseline và zero-shot](doc/cach_lam.md#chay-lai-phan-cua-phuc)
+- [Mở dashboard Streamlit](doc/streamlit.md)
 
 Kết quả Phúc đã được chạy lại trên shared split seed 42; xem `results/phuc/shared_seed42_20261017/`. Bảng so sánh encoder và prediction ID-only đã được xác minh trên cùng validation/official test tại `results/team/`.
 

@@ -86,4 +86,4 @@ Không đợi đến 19/10 mới gửi code lần đầu. Bản gửi 15/10 ph�
 - Sau đó mới hướng dẫn tạo/cấu hình repo, chia nhánh, cách push và kiểm soát tích hợp. Chưa có URL repo, tài khoản GitHub hoặc môi trường máy của từng người trong yêu cầu hiện tại.
 - Chưa đặt nhắc lịch tự động. Mục này là ghi chú yêu cầu để tiếp tục công việc ở lượt sau.
 
-Nguồn tài liệu: `Pasted text.txt` do người dùng đính kèm (yêu cầu chung, mục 11, báo cáo tiến độ/cuối kỳ) và ảnh danh sách nhóm. Đây là kế hoạch phân công; chưa có code hoặc kết quả thực nghiệm được tạo hay xác minh.
+Nguồn tài liệu: `Pasted text.txt` do người dùng đính kèm (yêu cầu chung, mục 11, báo cáo tiến độ/cuối kỳ) và ảnh danh sách nhóm. Câu “chưa có code hoặc kết quả” mô tả thời điểm lập kế hoạch ngày 07/10/2026; trạng thái thực nghiệm và review cập nhật xem `doc/review.md` và `doc/cach_lam.md`.
