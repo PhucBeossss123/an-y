@@ -7,6 +7,8 @@ from pathlib import Path
 import joblib
 
 from .bert import predict_bert
+from .distilbert import predict_distilbert
+from .roberta import predict_roberta
 from .zero_shot import classify, make_pipeline, read_config
 
 
@@ -113,7 +115,12 @@ def main() -> None:
             raise SystemExit(
                 f"Missing fine-tuned checkpoint {checkpoint}; train the model or pass --checkpoint."
             )
-        result = predict_bert(args.text, checkpoint)
+        predictor = {
+            "bert": predict_bert,
+            "roberta": predict_roberta,
+            "distilbert": predict_distilbert,
+        }[args.method]
+        result = predictor(args.text, checkpoint)
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
 

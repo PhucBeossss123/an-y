@@ -7,6 +7,8 @@ from pathlib import Path
 
 from an_y.predict import predict_baseline, predict_zero_shot
 from an_y.bert import predict_bert
+from an_y.distilbert import predict_distilbert
+from an_y.roberta import predict_roberta
 
 
 PAGE = """<!doctype html>
@@ -90,7 +92,12 @@ def make_handler(output_dir: Path, team_dir: Path):
                     checkpoint = Path(
                         json.loads(selection_path.read_text(encoding="utf-8"))["checkpoint"]
                     )
-                    result = predict_bert(text, checkpoint)
+                    predictor = {
+                        "bert": predict_bert,
+                        "roberta": predict_roberta,
+                        "distilbert": predict_distilbert,
+                    }[model]
+                    result = predictor(text, checkpoint)
                 else:
                     raise ValueError("Unknown model selection.")
                 self._json(200, result)

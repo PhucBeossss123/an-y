@@ -1,16 +1,29 @@
 # Xem báo cáo bằng Streamlit
 
-## Mở ứng dụng trên Windows
+## Chạy trên Windows
 
-Chạy từ thư mục gốc repo:
+Ứng dụng chạy trên máy cá nhân; địa chỉ `localhost:8502` chỉ hoạt động khi máy đang chạy Streamlit. Tắt máy sẽ dừng tiến trình. Sau khi đăng nhập Windows, mở ứng dụng theo một trong hai cách:
+
+- Chạy `scripts/start_streamlit_hidden.vbs` từ File Explorer. Script tự dùng Python trong `.venv`, chờ dịch vụ sẵn sàng rồi mở trình duyệt.
+- Hoặc chạy thủ công từ thư mục gốc repo:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install -r requirements-app.txt
-$env:STREAMLIT_CONFIG_DIR = "$PWD\.streamlit"
 .\.venv\Scripts\python.exe -m streamlit run app.py --server.address 0.0.0.0 --server.port 8502
 ```
 
-Trên cùng máy, mở `http://localhost:8502`. Để máy khác trong cùng Wi-Fi/LAN truy cập, lấy IPv4 của máy chạy app bằng `ipconfig` (ví dụ `192.168.1.116`), rồi mở `http://192.168.1.116:8502` trên máy kia. Nếu Windows Firewall hỏi, cho phép Python/Streamlit trên mạng riêng. Cổng 8502 được dùng để không chiếm cổng 8501 có thể đang được SEIBEN sử dụng. Dừng app bằng `Ctrl+C` trong terminal; `STREAMLIT_CONFIG_DIR` lưu cấu hình trong thư mục dự án. Cách này chỉ dùng được trong cùng mạng nội bộ, không tạo link Internet công khai.
+Nếu đây là lần đầu thiết lập môi trường, cài gói một lần:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-app.txt
+```
+
+### Tự khởi động sau khi đăng nhập
+
+Shortcut `iSarcasmEval Streamlit` đã được thêm vào Startup của tài khoản Windows hiện tại. Sau mỗi lần đăng nhập, Windows chạy ứng dụng nền và mở `http://localhost:8502` khi máy chủ sẵn sàng. Tắt máy sẽ dừng ứng dụng; nó được khởi động lại ở lần đăng nhập kế tiếp. Để tắt tự khởi động, nhấn `Win+R`, nhập `shell:startup`, nhấn `Enter`, rồi xóa shortcut đó. Nếu chuyển repo sang thư mục khác, cần tạo lại shortcut trỏ tới `scripts\start_streamlit_hidden.vbs` mới.
+
+Script không cài lại gói khi khởi động. Nó phát hiện nếu dịch vụ đã chạy, ghi log tại `outputs/streamlit/stdout.log` và `outputs/streamlit/stderr.log`, và chờ tối đa 90 giây để ứng dụng sẵn sàng. Nếu trình duyệt không tự mở, chạy lại VBS; nếu vẫn lỗi, xem hai tệp log. Cổng 8502 giữ nguyên để không chiếm cổng 8501 có thể đang được SEIBEN sử dụng.
+
+Trên cùng máy, mở `http://localhost:8502`. Để máy khác trong cùng Wi-Fi/LAN truy cập, lấy IPv4 của máy chạy app bằng `ipconfig` (ví dụ `192.168.1.116`), rồi mở `http://192.168.1.116:8502` trên máy kia. Nếu Windows Firewall hỏi, cho phép Python/Streamlit trên mạng riêng. Cách này chỉ dùng được trong cùng mạng nội bộ, không tạo link Internet công khai.
 
 ## Cách đọc báo cáo
 

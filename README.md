@@ -7,6 +7,7 @@ Repo chung của nhóm 4 người cho bài toán phát hiện mỉa mai trên iS
 - [Cách tham gia nhóm và quy trình review trước khi push](doc/cach_lam.md)
 - [Giao diện dữ liệu, split và prediction dùng chung](doc/giao_dien.md)
 - [Phân công và yêu cầu đề tài](doc/phan_cong.md)
+- [Hướng dẫn đọc và trình bày các mô hình](doc/huong_dan_doc_mo_hinh.md)
 - [Rule của repo](AGENTS.md)
 - [Trạng thái hiện tại của từng phần](doc/review.md)
 

@@ -247,7 +247,17 @@ RoBERTa seed 42 được chọn cho demo bằng mean validation Macro-F1 của e
 
 ## Quy trình tích hợp BERT, RoBERTa, DistilBERT
 
-Cả ba encoder dùng loader/split chung, chỉ lấy `text` và `label`, cùng official test, 3 epoch, max length 128, batch 4, gradient accumulation 4, learning rate `2e-5`; seeds là `42, 123, 2026`. Mỗi seed chọn epoch bằng validation Macro-F1 (hòa thì F1 sarcastic), rồi mới chạy official test. Model weights/checkpoints và dữ liệu vẫn nằm trong `outputs/`/`data/raw/` (Git ignored). Base-model revisions được pin trong `scripts/train_transformer.py`.
+Cả ba encoder dùng loader/split chung, chỉ lấy `text` và `label`, cùng official test, 3 epoch, max length 128, batch 4, gradient accumulation 4, learning rate `2e-5`; seeds là `42, 123, 2026`. Mỗi seed chọn epoch bằng validation Macro-F1 (hòa thì F1 sarcastic), rồi mới chạy official test. Model weights/checkpoints và dữ liệu vẫn nằm trong `outputs/`/`data/raw/` (Git ignored). Base-model revisions được pin trong file cấu hình riêng của từng mô hình.
+
+Mã được tách theo mô hình để dễ đọc: mỗi file `src/an_y/bert.py`, `src/an_y/roberta.py`, và `src/an_y/distilbert.py` đều có cấu hình, tokenizer, vòng lặp huấn luyện, chọn checkpoint theo validation, đánh giá và dự đoán của chính mô hình đó. Các file chỉ dùng chung bộ đọc dữ liệu và hàm tính metric. Cách này dễ mở từng mô hình để trình bày; đổi lại, nếu sửa quy trình huấn luyện thì phải áp dụng nhất quán ở cả ba file. Mỗi mô hình có lệnh chạy riêng: `scripts/train_bert.py`, `scripts/train_roberta.py`, và `scripts/train_distilbert.py`.
+
+```powershell
+.\.venv\Scripts\python.exe scripts\train_bert.py --output-dir outputs\team\bert
+.\.venv\Scripts\python.exe scripts\train_roberta.py --output-dir outputs\team\roberta
+.\.venv\Scripts\python.exe scripts\train_distilbert.py --output-dir outputs\team\distilbert
+```
+
+Lệnh gộp cũ `scripts/train_transformer.py <bert|roberta|distilbert>` vẫn được giữ để tương thích. Khi đọc code hoặc chạy từng mô hình, ưu tiên các file có tên mô hình ở trên.
 
 ```powershell
 `$env:HF_HOME='outputs/hf_cache'
@@ -271,3 +281,23 @@ $env:STREAMLIT_CONFIG_DIR = "$PWD\.streamlit"
 ```
 
 Kết quả kiểm tra ngày 18/10/2026: `py_compile` thành công; Streamlit AppTest render đủ năm mục không có exception; server đang bind `0.0.0.0:8502`. Cả `http://127.0.0.1:8502` và địa chỉ LAN hiện tại `http://192.168.1.116:8502` trả HTTP 200 từ máy chủ. Kiểm tra từ máy chủ không xác nhận được truy cập qua firewall từ máy thứ hai. Kiểm tra này không bấm nút suy luận; câu nhập tay không được thêm vào tập đánh giá. Báo cáo phân biệt Macro-F1 và F1 sarcastic, giải thích mean ± sample SD qua ba seed cho encoder, và ghi rõ SVM margin/zero-shot score không phải xác suất hiệu chỉnh.
+
+## Thử ngưỡng dự đoán RoBERTa — 20/10/2026
+
+RoBERTa seed 42 ban đầu chọn lớp bằng `argmax` (tương đương ngưỡng 0.5 trên softmax score lớp sarcastic). Đã dò ngưỡng từ 0.30 đến 0.70, bước 0.005, chỉ trên shared validation (694 mẫu), tối đa hóa Macro-F1 rồi dùng F1 sarcastic để phá hòa. Ngưỡng được chọn là `0.475`; đây là ngưỡng quyết định trên score thô, không phải xác suất đã hiệu chỉnh. Áp dụng ngưỡng này trong `predict_roberta()`.
+
+```powershell
+.\.venv\Scripts\python.exe scripts\tune_roberta_threshold.py --evaluate-test --output-dir outputs\experiments\roberta_threshold_0475\seed_42
+```
+
+Trên validation seed 42, Macro-F1 tăng từ `0.6413` lên `0.6530`; F1 sarcastic tăng từ `0.4330` lên `0.4635`. Sau khi chốt ngưỡng bằng validation, official test được chấm một lần: Macro-F1 `0.6225`, F1 sarcastic `0.3911`, so với `0.6366` và `0.4032` ở ngưỡng 0.5. Recall sarcastic trên test tăng `0.5050` lên `0.5300`, nhưng precision giảm `0.3355` xuống `0.3099`; vì vậy không kết luận ngưỡng mới tốt hơn trên mọi thước đo. Prediction ID-only và metrics cho lần thử nằm trong `outputs/experiments/roberta_threshold_0475/seed_42/` (thư mục outputs không commit).
+
+Một thử nghiệm phụ tăng loss weight lớp sarcastic lên 1.5 không được giữ lại: seed 42 sau hai epoch vẫn dự đoán cả 694 câu validation là lớp 0, Macro-F1 `0.4288`. Thử nghiệm này dừng trước khi chạy các seed còn lại; không dùng kết quả đó làm cấu hình.
+
+## Rà soát sau chỉnh ngưỡng — 20/10/2026
+
+Đã chạy `python -m py_compile app.py src/an_y/roberta.py scripts/train_roberta.py scripts/tune_roberta_threshold.py`, `python -m compileall -q app.py src scripts`, và `python scripts/check_line_limits.py`: đều đạt; 26 file code không vượt 500 dòng. `python scripts/verify_outputs.py` đạt cho SVM và zero-shot. Lệnh này ghi một cảnh báo về một exact-text duplicate trong provisional train/validation; mẫu được báo cáo, không bị xóa.
+
+Đã chạy `streamlit.testing.v1.AppTest` qua cả năm trang (`Báo cáo`, `So sánh mô hình`, `Prompt zero-shot`, `Phân tích lỗi`, `Thử câu`): không có exception. Gọi trực tiếp `predict_roberta()` với checkpoint được chọn trả về nhãn nhị phân; đây là smoke check, không phải đánh giá độ chính xác. Máy chủ tại `http://127.0.0.1:8502` trả HTTP 200.
+
+Rà soát read-only 18 prediction CSV của BERT/RoBERTa/DistilBERT (3 seed × validation/official test): thứ tự ID, gold label, schema ID-only, nhãn nhị phân và metric đều khớp nguồn/split. Không ghi dữ liệu hay checkpoint vào Git.

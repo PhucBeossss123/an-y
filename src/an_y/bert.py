@@ -1,4 +1,4 @@
-"""Fine-tune BERT-base on the fixed iSarcasmEval team split."""
+"""Train and predict with BERT-base on iSarcasmEval."""
 
 from __future__ import annotations
 
@@ -245,10 +245,10 @@ def run_bert(
     data_dir: str | Path = "data/raw",
     split_file: str | Path = "data/splits/shared_split_seed42.csv",
     split_manifest: str | Path = "data/splits/manifest.json",
-    output_dir: str | Path = "outputs/bert",
+    output_dir: str | Path = "outputs/team/bert",
     config: BertConfig | None = None,
 ) -> dict:
-    """Fine-tune an encoder for each seed, select epochs on validation, then test."""
+    """Fine-tune this model for each seed; select checkpoints on validation."""
     config = config or BertConfig()
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
@@ -323,7 +323,7 @@ def _load_prediction_model(checkpoint_path: str):
 
 
 def predict_bert(text: str, checkpoint_dir: str | Path) -> dict:
-    """Predict one text, returning a binary label without a probability claim."""
+    """Predict one text with a fine-tuned encoder, without a probability claim."""
     tokenizer, model, device, max_length, method = _load_prediction_model(
         str(Path(checkpoint_dir).resolve())
     )

@@ -21,7 +21,7 @@ st.markdown("""
 .block-container{max-width:1180px;padding-top:2rem;padding-bottom:4rem}
 .hero{padding:1.5rem 1.7rem;border-radius:18px;background:linear-gradient(120deg,#102b46,#1c5b70);color:#fff;margin-bottom:1.2rem}
 .hero h1{margin:0 0 .4rem;font-size:2rem}.hero p{margin:.25rem 0;color:#e0eef4}
-.note{padding:.85rem 1rem;border-left:4px solid #287b86;background:#f1f7f8;border-radius:6px;margin:.8rem 0 1.1rem}
+.note{padding:.85rem 1rem;border-left:4px solid #287b86;background:#f1f7f8;color:#17313a;border-radius:6px;margin:.8rem 0 1.1rem}
 </style>
 """, unsafe_allow_html=True)
 
@@ -157,7 +157,8 @@ def demo_page():
     st.title("Thử phân loại một câu")
     chosen=selected_model(); default=MODEL_LABELS[chosen["architecture"]]
     choices=["RoBERTa-base","BERT-base","DistilBERT","TF-IDF + SVM","Zero-shot"]
-    model=st.selectbox("Mô hình",choices,index=choices.index(default))
+    model=st.selectbox("Mô hình (khuyến nghị theo validation)",choices,index=choices.index(default),key="demo_model_v2")
+    st.info("RoBERTa-base đang được khuyến nghị theo validation; ngưỡng dự đoán sarcastic 0.475 được chọn trên validation cho checkpoint seed 42. TF-IDF + SVM và Zero-shot được giữ lại để so sánh.")
     text=st.text_area("Câu tiếng Anh",placeholder="Type an English sentence…",max_chars=5000)
     st.caption("Câu nhập tay không thuộc validation hay official test. Điểm/margin hiển thị không phải xác suất đã hiệu chỉnh.")
     if st.button("Phân loại",type="primary",disabled=not text.strip()):
@@ -165,13 +166,16 @@ def demo_page():
             try:
                 from an_y.predict import predict_baseline,predict_zero_shot
                 from an_y.bert import predict_bert
+                from an_y.roberta import predict_roberta
+                from an_y.distilbert import predict_distilbert
                 import json as _json
                 if model=="TF-IDF + SVM": result=predict_baseline(text.strip(),PHUC_OUTPUTS)
                 elif model=="Zero-shot": result=predict_zero_shot(text.strip(),"selected",PHUC_OUTPUTS)
                 else:
                     key={v:k for k,v in MODEL_LABELS.items()}[model]
                     checkpoint=Path(_json.loads((TEAM_OUTPUTS/key/"selected_checkpoint.json").read_text(encoding="utf-8"))["checkpoint"])
-                    result=predict_bert(text.strip(),checkpoint)
+                    predictors={"bert":predict_bert,"roberta":predict_roberta,"distilbert":predict_distilbert}
+                    result=predictors[key](text.strip(),checkpoint)
                 label=int(result["y_pred"])
                 st.success(f"Kết quả: {'sarcastic (1)' if label else 'sincere (0)'}")
                 st.write(f"Mô hình: {model}")

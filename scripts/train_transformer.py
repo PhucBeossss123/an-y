@@ -1,30 +1,24 @@
-"""Train a reproducible shared-split transformer run for the team comparison."""
+"""Legacy combined entry point; use train_bert.py, train_roberta.py, or train_distilbert.py."""
 
 import argparse
 from pathlib import Path
 
 from an_y.bert import BertConfig, run_bert
+from an_y.distilbert import DistilBertConfig, run_distilbert
+from an_y.roberta import RobertaConfig, run_roberta
 
 
 MODELS = {
-    "bert": (
-        "bert-base-uncased",
-        "86b5e0934494bd15c9632b12f734a8a67f723594",
-    ),
-    "roberta": (
-        "FacebookAI/roberta-base",
-        "e2da8e2f811d1448a5b465c236feacd80ffbac7b",
-    ),
-    "distilbert": (
-        "distilbert/distilbert-base-uncased",
-        "12040accade4e8a0f71eabdb258fecc2e7e948be",
-    ),
+    "bert": (BertConfig, run_bert),
+    "roberta": (RobertaConfig, run_roberta),
+    "distilbert": (DistilBertConfig, run_distilbert),
 }
 
 
-def main() -> None:
+def main(fixed_model: str | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("model", choices=MODELS)
+    if fixed_model is None:
+        parser.add_argument("model", choices=MODELS)
     parser.add_argument("--data-dir", type=Path, default=Path("data/raw"))
     parser.add_argument(
         "--split-file", type=Path,
@@ -45,11 +39,10 @@ def main() -> None:
     parser.add_argument("--no-mixed-precision", action="store_true")
     args = parser.parse_args()
 
-    model_name, revision = MODELS[args.model]
-    output_dir = args.output_dir or Path("outputs") / "team" / args.model
-    config = BertConfig(
-        model_name=model_name,
-        revision=revision,
+    model = fixed_model or args.model
+    config_type, run_model = MODELS[model]
+    output_dir = args.output_dir or Path("outputs") / "team" / model
+    config = config_type(
         max_length=args.max_length,
         train_batch_size=args.train_batch_size,
         eval_batch_size=args.eval_batch_size,
@@ -59,14 +52,14 @@ def main() -> None:
         seeds=tuple(args.seeds),
         mixed_precision=not args.no_mixed_precision,
     )
-    metrics = run_bert(
+    metrics = run_model(
         data_dir=args.data_dir,
         split_file=args.split_file,
         split_manifest=args.split_manifest,
         output_dir=output_dir,
         config=config,
     )
-    print(f"Saved {args.model} run to {output_dir}")
+    print(f"Saved {model} run to {output_dir}")
     print(metrics)
 
 
