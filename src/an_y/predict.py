@@ -13,6 +13,7 @@ from .zero_shot import classify, make_pipeline, read_config
 
 
 LABEL_NAMES = {0: "sincere", 1: "sarcastic"}
+SVM_DECISION_THRESHOLD = -0.1489
 
 
 def predict_baseline(text: str, output_dir: Path) -> dict:
@@ -23,8 +24,8 @@ def predict_baseline(text: str, output_dir: Path) -> dict:
         )
 
     model = joblib.load(model_path)
-    prediction = int(model.predict([text])[0])
     margin = float(model.decision_function([text])[0])
+    prediction = int(margin >= SVM_DECISION_THRESHOLD)
     return {
         "method": "tfidf_linear_svm",
         "y_pred": prediction,
@@ -60,6 +61,7 @@ def predict_zero_shot(
         [text],
         prompt,
         config,
+        sarcastic_threshold=float(config.get("sarcastic_threshold", 0.5)),
     )
 
     prediction = predicted_labels[0]

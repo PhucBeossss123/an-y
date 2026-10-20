@@ -3,6 +3,7 @@
   "model_revision": "fa2804872c3b4bd748f38c0185cc85775361e735",
   "hypothesis_max_length": 256,
   "batch_size": 4,
+  "sarcastic_threshold": 0.43,
   "prompts": [
     {
       "id": "original",

@@ -39,7 +39,7 @@ def make_pipeline(config: dict):
     )
 
 
-def classify(pipe, texts: list[str], prompt: dict, config: dict):
+def classify(pipe, texts: list[str], prompt: dict, config: dict, sarcastic_threshold: float = 0.5):
     """Return the winning label, its NLI score, and binary class for each text."""
     candidates = prompt["candidate_labels"]
     label_to_id = prompt["label_to_id"]
@@ -49,6 +49,8 @@ def classify(pipe, texts: list[str], prompt: dict, config: dict):
     chosen_labels = []
     chosen_scores = []
     predictions = []
+    sarcastic_label = next(label for label, value in label_to_id.items() if value == 1)
+    sincere_label = next(label for label, value in label_to_id.items() if value == 0)
 
     for start in range(0, len(texts), TEXT_BATCH_SIZE):
         batch_texts = texts[start : start + TEXT_BATCH_SIZE]
@@ -70,7 +72,11 @@ def classify(pipe, texts: list[str], prompt: dict, config: dict):
                     f"{sorted(missing_labels)}"
                 )
 
-            selected_label = max(candidates, key=scores_by_label.__getitem__)
+            selected_label = (
+                sarcastic_label
+                if scores_by_label[sarcastic_label] >= sarcastic_threshold
+                else sincere_label
+            )
             chosen_labels.append(selected_label)
             chosen_scores.append(float(scores_by_label[selected_label]))
             predictions.append(int(label_to_id[selected_label]))
