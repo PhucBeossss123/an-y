@@ -1,6 +1,7 @@
 """Curated Streamlit report for iSarcasmEval English Subtask A."""
 
 import json
+from html import escape
 from pathlib import Path
 
 import pandas as pd
@@ -18,10 +19,35 @@ SEEDS = (42, 123, 2026)
 st.set_page_config(page_title="iSarcasmEval | Báo cáo", page_icon="📊", layout="wide")
 st.markdown("""
 <style>
-.block-container{max-width:1180px;padding-top:2rem;padding-bottom:4rem}
+html{font-size:20px}
+html:has(.errors-hero){font-size:18px}
+.block-container{max-width:1440px;padding-top:2rem;padding-bottom:4rem}
 .hero{padding:1.5rem 1.7rem;border-radius:18px;background:linear-gradient(120deg,#102b46,#1c5b70);color:#fff;margin-bottom:1.2rem}
 .hero h1{margin:0 0 .4rem;font-size:2rem}.hero p{margin:.25rem 0;color:#e0eef4}
 .note{padding:.85rem 1rem;border-left:4px solid #287b86;background:#f1f7f8;color:#17313a;border-radius:6px;margin:.8rem 0 1.1rem}
+.errors-hero{padding:1.6rem 1.8rem;border:1px solid rgba(125,211,252,.25);border-radius:22px;background:radial-gradient(ellipse at 90% 0%,rgba(34,211,238,.22),transparent 38%),linear-gradient(125deg,#101a2d,#162b43 58%,#174052);color:#f8fafc;margin:.2rem 0 1.1rem;box-shadow:0 18px 50px rgba(2,8,23,.22)}
+.errors-kicker{font-size:.88rem;font-weight:750;letter-spacing:.13em;text-transform:uppercase;color:#7dd3fc;margin:0 0 .45rem}
+.errors-hero h1{font-size:2.5rem;line-height:1.15;margin:0 0 .55rem;color:#fff}
+.errors-hero p{font-size:1.13rem;line-height:1.65;color:#cbd5e1;margin:0;max-width:850px}
+.errors-meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+.errors-meta span{padding:.4rem .7rem;border-radius:999px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);font-size:.82rem;color:#e2e8f0}
+.case-card{height:100%;box-sizing:border-box;padding:1.05rem 1.1rem 1rem;border:1px solid rgba(148,163,184,.2);border-radius:18px;background:linear-gradient(155deg,rgba(30,41,59,.78),rgba(15,23,42,.92));box-shadow:0 10px 28px rgba(0,0,0,.13);margin:.15rem 0 .7rem;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.case-card:hover{transform:translateY(-2px);border-color:rgba(56,189,248,.48);box-shadow:0 16px 34px rgba(0,0,0,.22)}
+.case-top{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin-bottom:.8rem}
+.case-type{font-size:.9rem;font-weight:700;letter-spacing:.04em;color:#7dd3fc}
+.case-id{font-size:.86rem;color:#94a3b8;font-variant-numeric:tabular-nums}
+.case-text{font-size:1.2rem;line-height:1.72;color:#f1f5f9;margin:0 0 1rem;overflow-wrap:anywhere}
+.gold-label{font-size:.86rem;padding:.34rem .62rem;border-radius:999px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);color:#fde68a;white-space:nowrap}
+.model-row{display:flex;flex-wrap:wrap;gap:.45rem}
+.model-pill{display:inline-flex;align-items:center;gap:.35rem;padding:.42rem .62rem;border-radius:9px;font-size:.88rem;color:#cbd5e1;background:rgba(148,163,184,.09);border:1px solid rgba(148,163,184,.15)}
+.model-pill b{color:#f8fafc}.model-pill.good{border-color:rgba(52,211,153,.28);background:rgba(16,185,129,.1)}.model-pill.bad{border-color:rgba(251,113,133,.34);background:rgba(244,63,94,.1)}
+.error-footnote{padding:.8rem .95rem;border-radius:12px;background:rgba(148,163,184,.07);color:#94a3b8;font-size:.92rem;line-height:1.6}
+[data-testid="stVegaLiteChart"] svg text{font-size:16px !important}
+html:not(:has(.errors-hero)) [data-testid="stMarkdownContainer"] p{font-size:1rem !important;line-height:1.65}
+html:not(:has(.errors-hero)) [data-testid="stCaptionContainer"]{font-size:.9rem !important;line-height:1.55}
+html:not(:has(.errors-hero)) [data-testid="stWidgetLabel"]{font-size:.95rem !important}
+html:not(:has(.errors-hero)) [data-testid="stDataFrame"]{--gdg-font-size:16px}
+@media(max-width:700px){.errors-hero{padding:1.25rem}.errors-hero h1{font-size:1.75rem}.case-card{padding:.9rem}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -138,19 +164,42 @@ def error_examples():
 
 
 def errors_page():
-    st.title("Một vài lỗi đáng phân tích")
-    st.write("Các ví dụ dưới đây được chọn để minh họa nhóm lỗi đã ghi nhận, không phải toàn bộ dự đoán. Nhãn 0 = sincere, 1 = sarcastic.")
     try:
         examples=error_examples()
     except Exception as e:
         st.error(f"Chưa nạp được ví dụ lỗi từ official test local: {e}")
         return
-    for _,r in examples.iterrows():
-        with st.container(border=True):
-            st.markdown(f"**{r['Nhóm']} · {r['ID']} · Gold: {r['Gold']}**")
-            st.write(r["Câu"])
-            st.caption(" · ".join(f"{m}: {r[m]}" for m in MODEL_LABELS.values()))
-    st.caption("Phân tích định tính; không suy rộng tần suất từ các ví dụ được chọn.")
+    st.markdown("""
+    <section class="errors-hero">
+      <div class="errors-kicker">Model behavior · iSarcasmEval</div>
+      <h1>Mổ xẻ những câu dễ gây nhầm lẫn</h1>
+      <p>Năm ví dụ được chọn để nhìn rõ cách mỉa mai xuất hiện trong câu chữ và cách các mô hình đọc chúng. Mỗi thẻ đặt nhãn gốc cạnh dự đoán để bạn so sánh ngay.</p>
+      <div class="errors-meta"><span>5 ví dụ tiêu biểu</span><span>0 · sincere</span><span>1 · sarcastic</span><span>BERT · RoBERTa · DistilBERT</span></div>
+    </section>
+    """, unsafe_allow_html=True)
+    left,right=st.columns(2, gap="medium")
+    for index,(_,r) in enumerate(examples.iterrows()):
+        target=left if index % 2 == 0 else right
+        gold=int(r["Gold"])
+        gold_text="sarcastic · 1" if gold else "sincere · 0"
+        pills=[]
+        for model_name in MODEL_LABELS.values():
+            pred=int(r[model_name])
+            pred_text="sarcastic" if pred else "sincere"
+            status="good" if pred == gold else "bad"
+            mark="✓" if pred == gold else "×"
+            pills.append(f'<span class="model-pill {status}">{mark} <b>{escape(model_name)}</b> {pred_text}</span>')
+        card=f"""
+        <article class="case-card">
+          <div class="case-top"><span class="case-type">{escape(str(r['Nhóm']))}</span><span class="case-id">{escape(str(r['ID']))}</span></div>
+          <div class="case-top"><span style="font-size:.73rem;color:#94a3b8">NHÃN GỐC</span><span class="gold-label">{gold_text}</span></div>
+          <p class="case-text">{escape(str(r['Câu']))}</p>
+          <div class="model-row">{' '.join(pills)}</div>
+        </article>
+        """
+        with target:
+            st.markdown(card, unsafe_allow_html=True)
+    st.markdown('<div class="error-footnote">Đọc các ví dụ này như phân tích định tính. Đây là những trường hợp được chọn, không đại diện cho tần suất lỗi trên toàn bộ tập test.</div>',unsafe_allow_html=True)
 
 
 def demo_page():
@@ -158,13 +207,17 @@ def demo_page():
     chosen=selected_model(); default=MODEL_LABELS[chosen["architecture"]]
     choices=["RoBERTa-base","BERT-base","DistilBERT","TF-IDF + SVM","Zero-shot"]
     model=st.selectbox("Mô hình (khuyến nghị theo validation)",choices,index=choices.index(default),key="demo_model_v2")
-    st.info("RoBERTa-base đang được khuyến nghị theo validation; ngưỡng dự đoán sarcastic 0.475 được chọn trên validation cho checkpoint seed 42. TF-IDF + SVM và Zero-shot được giữ lại để so sánh.")
+    st.info("Ngưỡng quyết định được chọn riêng cho từng mô hình trên shared validation; điểm thô không phải xác suất đã hiệu chỉnh.")
     text=st.text_area("Câu tiếng Anh",placeholder="Type an English sentence…",max_chars=5000)
     st.caption("Câu nhập tay không thuộc validation hay official test. Điểm/margin hiển thị không phải xác suất đã hiệu chỉnh.")
     if st.button("Phân loại",type="primary",disabled=not text.strip()):
         with st.spinner("Đang chạy mô hình…"):
             try:
-                from an_y.predict import predict_baseline,predict_zero_shot
+                import importlib as _importlib
+                _predict = _importlib.reload(_importlib.import_module("an_y.predict"))
+                apply_rhetorical_context_guard = _predict.apply_rhetorical_context_guard
+                predict_baseline = _predict.predict_baseline
+                predict_zero_shot = _predict.predict_zero_shot
                 from an_y.bert import predict_bert
                 from an_y.roberta import predict_roberta
                 from an_y.distilbert import predict_distilbert
@@ -176,9 +229,12 @@ def demo_page():
                     checkpoint=Path(_json.loads((TEAM_OUTPUTS/key/"selected_checkpoint.json").read_text(encoding="utf-8"))["checkpoint"])
                     predictors={"bert":predict_bert,"roberta":predict_roberta,"distilbert":predict_distilbert}
                     result=predictors[key](text.strip(),checkpoint)
+                result=apply_rhetorical_context_guard(text.strip(),result)
                 label=int(result["y_pred"])
                 st.success(f"Kết quả: {'sarcastic (1)' if label else 'sincere (0)'}")
                 st.write(f"Mô hình: {model}")
+                if result.get("context_guard"):
+                    st.info(f"Quy tắc ngữ cảnh nhận ra câu hỏi tu từ đối lập kèm sắc thái khen/chê. Dự đoán gốc của mô hình: {result['base_label']} ({result['base_y_pred']}); kết quả sau hiệu chỉnh: sarcastic (1).")
                 score=result.get("decision_margin",result.get("selected_score"))
                 if score is not None: st.write(f"Điểm thô: {float(score):.4f} · {result.get('score_note','')}")
             except Exception as e:

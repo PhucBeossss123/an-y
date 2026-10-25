@@ -2,12 +2,14 @@
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 import joblib
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import FeatureUnion, Pipeline
+from sklearn.preprocessing import FunctionTransformer
 from sklearn.svm import LinearSVC
 
 from .data import load_shared_split, load_test, load_train, provisional_split, save_errors
@@ -16,6 +18,23 @@ from .metrics import summarize
 
 C_VALUES = (0.5, 1.0, 2.0)
 CLASS_WEIGHTS = (None, "balanced")
+POSITIVE_CUES = re.compile(
+    r"\b(grateful|thank(?:s|ful)?|love|lovely|amazing|great|brilliant|perfect|"
+    r"wonderful|excellent|fantastic|favorite|inspir(?:ed|ing)|productive|"
+    r"delighted|happy|pleased|appreciate|best|incredible|masterclass)\b",
+    re.IGNORECASE,
+)
+NEGATIVE_CUES = re.compile(
+    r"\b(late|deadline|delay(?:ed)?|miss(?:ed|ing)?|fail(?:ed|ure)?|problem|"
+    r"wrong|terrible|awful|waste|pointless|broken|disaster|frustrat(?:ed|ing)|"
+    r"disappoint(?:ed|ing)|bad|cancel(?:led|ed)?|lost|cost|error|issue|crisis|chaos)\b",
+    re.IGNORECASE,
+)
+RHETORICAL_CUES = re.compile(
+    r"\b(who cares|who asked|what could go wrong|yeah right|as if|i'm sure|"
+    r"i am sure|of course|my favorite part)\b",
+    re.IGNORECASE,
+)
 
 
 def make_model(c: float = 1.0, class_weight: str | None = None) -> Pipeline:
@@ -34,6 +53,67 @@ def make_model(c: float = 1.0, class_weight: str | None = None) -> Pipeline:
                 "svm",
                 LinearSVC(C=c, class_weight=class_weight, random_state=42),
             ),
+        ]
+    )
+
+
+def add_context_features(texts):
+    """Append generic polarity and rhetorical markers derived from text only."""
+    augmented = []
+    for value in texts:
+        text = str(value)
+        positive = bool(POSITIVE_CUES.search(text))
+        negative = bool(NEGATIVE_CUES.search(text))
+        markers = []
+        if positive:
+            markers.append("__POSITIVE_TONE__")
+        if negative:
+            markers.append("__NEGATIVE_CONTEXT__")
+        if positive and negative:
+            markers.append("__POLARITY_CONTRAST__")
+        if RHETORICAL_CUES.search(text):
+            markers.append("__RHETORICAL_CUE__")
+        if text.count("!") >= 2 or re.search(
+            r"\b(totally|absolutely|incredibly|truly)\b", text, re.IGNORECASE
+        ):
+            markers.append("__EMPHATIC_LANGUAGE__")
+        augmented.append(text + " " + " ".join(markers))
+    return augmented
+
+
+def make_context_model(
+    c: float = 1.0, class_weight: str | None = None, char_weight: float = 1.0
+) -> Pipeline:
+    """Build TF-IDF with learned word, character, and text-only cue features."""
+    features = FeatureUnion(
+        [
+            (
+                "word",
+                TfidfVectorizer(
+                    analyzer="word",
+                    ngram_range=(1, 3),
+                    sublinear_tf=True,
+                    min_df=1,
+                ),
+            ),
+            (
+                "char",
+                TfidfVectorizer(
+                    analyzer="char_wb",
+                    ngram_range=(3, 5),
+                    sublinear_tf=True,
+                    min_df=2,
+                    max_features=160_000,
+                ),
+            ),
+        ],
+        transformer_weights={"word": 1.0, "char": char_weight},
+    )
+    return Pipeline(
+        [
+            ("context", FunctionTransformer(add_context_features, validate=False)),
+            ("tfidf", features),
+            ("svm", LinearSVC(C=c, class_weight=class_weight, random_state=42)),
         ]
     )
 

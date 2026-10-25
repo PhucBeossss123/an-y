@@ -29,6 +29,7 @@ class DistilBertConfig:
     gradient_accumulation_steps: int = 4
     epochs: int = 3
     learning_rate: float = 2e-5
+    decision_threshold: float = 0.395
     weight_decay: float = 0.01
     warmup_ratio: float = 0.1
     seeds: tuple[int, ...] = (42, 123, 2026)
@@ -77,7 +78,7 @@ def _collate(tokenizer):
     return collate
 
 
-def _evaluate(model, loader, device) -> tuple[dict, np.ndarray]:
+def _evaluate(model, loader, device, decision_threshold: float = 0.395) -> tuple[dict, np.ndarray]:
     model.eval()
     labels = []
     predictions = []
@@ -85,8 +86,8 @@ def _evaluate(model, loader, device) -> tuple[dict, np.ndarray]:
         gold = batch.pop("labels").numpy()
         batch = {key: value.to(device) for key, value in batch.items()}
         with torch.no_grad():
-            logits = model(**batch).logits
-        predictions.extend(logits.argmax(dim=-1).cpu().numpy().tolist())
+            scores = torch.softmax(model(**batch).logits, dim=-1)[:, 1]
+        predictions.extend((scores >= decision_threshold).long().cpu().numpy().tolist())
         labels.extend(gold.tolist())
     return summarize(labels, predictions), np.asarray(predictions, dtype=np.int64)
 
@@ -177,7 +178,7 @@ def _train_seed(
                 optimizer.zero_grad(set_to_none=True)
 
         validation_metrics, validation_predictions = _evaluate(
-            model, validation_loader, device
+            model, validation_loader, device, config.decision_threshold
         )
         score = _score_pair(validation_metrics)
         print(
@@ -227,7 +228,12 @@ def _predict_checkpoint(
         shuffle=False,
         collate_fn=_collate(tokenizer),
     )
-    metrics, predictions = _evaluate(model, loader, device)
+    config_path = checkpoint / "training_config.json"
+    training_config = json.loads(config_path.read_text(encoding="utf-8")) if config_path.exists() else {}
+    metrics, predictions = _evaluate(
+        model, loader, device,
+        float(training_config.get("decision_threshold", config.decision_threshold)),
+    )
     del model
     if device.type == "cuda":
         torch.cuda.empty_cache()
@@ -319,19 +325,21 @@ def _load_prediction_model(checkpoint_path: str):
         device,
         int(training_config.get("max_length", 128)),
         training_config.get("model_name", "bert-base-uncased"),
+        float(training_config.get("decision_threshold", 0.395)),
     )
 
 
 def predict_distilbert(text: str, checkpoint_dir: str | Path) -> dict:
     """Predict one text with a fine-tuned encoder, without a probability claim."""
-    tokenizer, model, device, max_length, method = _load_prediction_model(
+    tokenizer, model, device, max_length, method, decision_threshold = _load_prediction_model(
         str(Path(checkpoint_dir).resolve())
     )
     encoded = tokenizer(text, truncation=True, max_length=max_length, return_tensors="pt")
     encoded = {key: value.to(device) for key, value in encoded.items()}
     model.eval()
     with torch.no_grad():
-        prediction = int(model(**encoded).logits.argmax(dim=-1).item())
+        score = torch.softmax(model(**encoded).logits, dim=-1)[0, 1].item()
+        prediction = int(score >= decision_threshold)
     return {
         "method": method,
         "y_pred": prediction,

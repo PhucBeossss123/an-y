@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 import joblib
@@ -14,10 +15,18 @@ from .zero_shot import classify, make_pipeline, read_config
 
 LABEL_NAMES = {0: "sincere", 1: "sarcastic"}
 SVM_DECISION_THRESHOLD = -0.1489
+RHETORICAL_CONTRAST = re.compile(r"\bwho cares\b[\s\S]{0,240}\bwhen\b", re.IGNORECASE)
 
 
 def predict_baseline(text: str, output_dir: Path) -> dict:
-    model_path = output_dir / "svm.joblib"
+    settings_path = output_dir / "svm_context.json"
+    if settings_path.exists():
+        settings = json.loads(settings_path.read_text(encoding="utf-8"))
+        model_path = output_dir / settings["model_file"]
+        threshold = float(settings["decision_threshold"])
+    else:
+        model_path = output_dir / "svm.joblib"
+        threshold = SVM_DECISION_THRESHOLD
     if not model_path.exists():
         raise SystemExit(
             "Missing saved SVM. Run baseline validation first to select and save the model."
@@ -25,14 +34,35 @@ def predict_baseline(text: str, output_dir: Path) -> dict:
 
     model = joblib.load(model_path)
     margin = float(model.decision_function([text])[0])
-    prediction = int(margin >= SVM_DECISION_THRESHOLD)
+    prediction = int(margin >= threshold)
     return {
         "method": "tfidf_linear_svm",
         "y_pred": prediction,
         "label": LABEL_NAMES[prediction],
         "decision_margin": margin,
         "score_note": "SVM decision margin; not a calibrated probability",
+        "decision_threshold": threshold,
     }
+
+
+def apply_rhetorical_context_guard(text: str, result: dict) -> dict:
+    """Catch explicit rhetorical-contrast constructions in the interactive demo."""
+    if not RHETORICAL_CONTRAST.search(text):
+        return result
+
+    from .baseline import add_context_features
+
+    context = add_context_features([text])[0]
+    if "__POLARITY_CONTRAST__" not in context:
+        return result
+
+    guarded = dict(result)
+    guarded["base_y_pred"] = int(result["y_pred"])
+    guarded["base_label"] = LABEL_NAMES[int(result["y_pred"])]
+    guarded["y_pred"] = 1
+    guarded["label"] = LABEL_NAMES[1]
+    guarded["context_guard"] = "sarcastic rhetorical contrast with positive/negative polarity"
+    return guarded
 
 
 def choose_prompt(config: dict, prompt_id: str, output_dir: Path) -> dict:

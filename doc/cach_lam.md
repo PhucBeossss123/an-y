@@ -284,7 +284,7 @@ Kết quả kiểm tra ngày 18/10/2026: `py_compile` thành công; Streamlit Ap
 
 ## Thử ngưỡng dự đoán RoBERTa — 20/10/2026
 
-RoBERTa seed 42 ban đầu chọn lớp bằng `argmax` (tương đương ngưỡng 0.5 trên softmax score lớp sarcastic). Đã dò ngưỡng từ 0.30 đến 0.70, bước 0.005, chỉ trên shared validation (694 mẫu), tối đa hóa Macro-F1 rồi dùng F1 sarcastic để phá hòa. Ngưỡng được chọn là `0.475`; đây là ngưỡng quyết định trên score thô, không phải xác suất đã hiệu chỉnh. Áp dụng ngưỡng này trong `predict_roberta()`.
+RoBERTa seed 42 ban đầu chọn lớp bằng `argmax` (tương đương ngưỡng 0.5 trên softmax score lớp sarcastic). Đã thử dò ngưỡng từ 0.30 đến 0.70, bước 0.005, chỉ trên shared validation (694 mẫu), tối đa hóa Macro-F1 rồi dùng F1 sarcastic để phá hòa. Ngưỡng thử nghiệm được chọn là `0.475`; đây là ngưỡng quyết định trên score thô, không phải xác suất đã hiệu chỉnh. Cấu hình `0.5` được khôi phục tạm thời sau thử nghiệm đầu; ở lần dò chung phía dưới, ngưỡng `0.475` lại được chọn theo shared validation.
 
 ```powershell
 .\.venv\Scripts\python.exe scripts\tune_roberta_threshold.py --evaluate-test --output-dir outputs\experiments\roberta_threshold_0475\seed_42
@@ -298,6 +298,119 @@ Một thử nghiệm phụ tăng loss weight lớp sarcastic lên 1.5 không đ�
 
 Đã chạy `python -m py_compile app.py src/an_y/roberta.py scripts/train_roberta.py scripts/tune_roberta_threshold.py`, `python -m compileall -q app.py src scripts`, và `python scripts/check_line_limits.py`: đều đạt; 26 file code không vượt 500 dòng. `python scripts/verify_outputs.py` đạt cho SVM và zero-shot. Lệnh này ghi một cảnh báo về một exact-text duplicate trong provisional train/validation; mẫu được báo cáo, không bị xóa.
 
+## Dò ngưỡng cho cả năm mô hình — 20/10/2026
+
+Chạy `scripts/tune_all_thresholds.py --evaluate-test`. Ngưỡng chọn riêng trên shared validation (694 câu), tối đa hóa Macro-F1, rồi F1 sarcastic để phá hòa; official test (1.400 câu) chỉ được chấm sau khi khóa ngưỡng. Encoder và zero-shot dò score từ `0.05` đến `0.95`, bước `0.005`; SVM dò các phân vị decision margin. Với SVM, validation được chấm bằng mô hình fit trên phần shared train; sau khi chốt ngưỡng, mô hình refit trên official train trước khi chấm test. Score/margin không phải xác suất đã hiệu chỉnh.
+
+| Mô hình | Ngưỡng chọn | Validation Macro-F1 / F1 sarcastic | Official test Macro-F1 / F1 sarcastic |
+|---|---:|---:|---:|
+| BERT-base, seed 42 | `0.535` | `0.6167 / 0.4201` | `0.6144 / 0.3787` |
+| RoBERTa-base, seed 42 | `0.475` | `0.6530 / 0.4635` | `0.6225 / 0.3911` |
+| DistilBERT, seed 123 | `0.395` | `0.6077 / 0.4126` | `0.5392 / 0.2857` |
+| TF-IDF + SVM | `-0.1489` | `0.5571 / 0.3529` | `0.5216 / 0.2799` |
+| Zero-shot, `explicit_negation` | `0.430` | `0.5603 / 0.3240` | `0.4563 / 0.0793` |
+
+Các ngưỡng trên được nối vào suy luận demo: encoder ở file cấu hình từng mô hình, SVM trong `src/an_y/predict.py`, zero-shot trong `config/prompts.json`. Test tăng ở BERT và zero-shot so với cấu hình argmax/prompt trước đó, nhưng giảm ở RoBERTa, DistilBERT và SVM. Vì vậy đây là lựa chọn theo validation, không phải cam kết mọi mô hình đều tăng trên dữ liệu mới. Tuner không dùng `outputs/.../svm.joblib` có thể đã refit trên toàn bộ train để đo validation; nó fit lại SVM trên shared train nhằm tránh rò rỉ validation.
+
+Đã biên dịch các file Python liên quan và chạy `scripts/check_line_limits.py`: 27 file code không vượt 500 dòng. Smoke check câu nhập tay “Oh, brilliant! I'm so glad we spent two hours planning this, only for you to do exactly what you wanted anyway” cho nhãn sarcastic ở BERT, RoBERTa, DistilBERT và SVM; zero-shot vẫn chọn sincere (NLI score `0.9366` cho nhãn not sarcastic). Câu nhập tay này không được tính vào metric validation/test.
+
+## Bật GPU NVIDIA trên Windows — 20/10/2026
+
+Model code tự chọn CUDA khi `torch.cuda.is_available()` trả về đúng; BERT, RoBERTa, DistilBERT và zero-shot dùng GPU. TF-IDF + SVM chạy bằng scikit-learn trên CPU. Môi trường `.venv` đã đổi từ PyTorch CPU sang CUDA build theo lệnh chính thức của PyTorch 2.5.1/CUDA 12.4:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install --force-reinstall torch==2.5.1 --index-url https://download.pytorch.org/whl/cu124
+.\.venv\Scripts\python.exe -c "import torch; print(torch.__version__, torch.version.cuda, torch.cuda.is_available(), torch.cuda.get_device_name(0))"
+```
+
+Kết quả thực tế: `torch 2.5.1+cu124`, CUDA runtime `12.4`, `torch.cuda.is_available() == True`, thiết bị `NVIDIA GeForce RTX 3050 Ti Laptop GPU` (4 GB), NVIDIA driver `566.07`. Phép nhân tensor smoke check trả tensor trên `cuda:0`. Lệnh dò ngưỡng cho cả năm mô hình chạy lại sau cài đặt CUDA; các con số trong bảng là kết quả đó. Khởi động lại Streamlit/Python để tiến trình đang mở nạp CUDA build mới.
+
 Đã chạy `streamlit.testing.v1.AppTest` qua cả năm trang (`Báo cáo`, `So sánh mô hình`, `Prompt zero-shot`, `Phân tích lỗi`, `Thử câu`): không có exception. Gọi trực tiếp `predict_roberta()` với checkpoint được chọn trả về nhãn nhị phân; đây là smoke check, không phải đánh giá độ chính xác. Máy chủ tại `http://127.0.0.1:8502` trả HTTP 200.
 
 Rà soát read-only 18 prediction CSV của BERT/RoBERTa/DistilBERT (3 seed × validation/official test): thứ tự ID, gold label, schema ID-only, nhãn nhị phân và metric đều khớp nguồn/split. Không ghi dữ liệu hay checkpoint vào Git.
+
+## Sweep learning rate encoder trên GPU — 20/10/2026
+
+Đã chạy `scripts/gpu_encoder_sweep.py` trên `NVIDIA GeForce RTX 3050 Ti Laptop GPU`, PyTorch CUDA 12.4, mixed precision FP16, batch 4, gradient accumulation 4. Mỗi encoder thử learning rate `1e-5`, `2e-5`, `3e-5`, tối đa 3 epoch, seed 42. Chọn learning rate và checkpoint theo Macro-F1 validation; nếu bằng thì dùng F1 sarcastic để phân xử. Chỉ sau khi chốt cấu hình mới tính official test, mỗi encoder một lần. Checkpoint và metrics được giữ riêng trong `outputs/experiments/gpu_encoder_sweep/`, không ghi đè checkpoint app.
+
+| Encoder | LR thang | Epoch tot nhat | Validation Macro-F1 / F1 sarcastic | Official test Macro-F1 / F1 sarcastic |
+|---|---:|---:|---:|---:|
+| BERT-base | `3e-5` | 2 | `0.6139 / 0.4098` | `0.6054 / 0.3619` |
+| RoBERTa-base | `2e-5` | 2 | `0.6489 / 0.4653` | `0.5874 / 0.3631` |
+| DistilBERT | `3e-5` | 3 | `0.6036 / 0.3831` | `0.5650 / 0.3090` |
+
+Đây là sweep nhanh với 1 seed và 3 learning rate; chưa đủ để kết luận độ ổn định qua nhiều seed và không đảm bảo tăng điểm trên official test. Kết quả validation và test khác nhau, do đó không chọn lại cấu hình dựa trên test. BERT/RoBERTa/DistilBERT được fine-tune trên GPU; TF-IDF + SVM vẫn chạy CPU, zero-shot chỉ suy luận trên GPU nếu được gọi.
+
+Lenh da chay:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\gpu_encoder_sweep.py --epochs 3 --learning-rates 1e-5 2e-5 3e-5
+```
+
+Revision nguồn iSarcasmEval: `dfc708b53bde1bb571abfb5692f63231c2232195`. SHA-256 train: `fde737b69caffbcf81ebe79858ad16ac21881573c308343cd5219c4f7a800ae7`; official test: `0ea25619ca3358ecc8440daac1b9bba4d18455bf5b76d874d8dd6a959e72fc49`; shared split: `f1a5118715a5387dc45dd86f797f86885ff60b3b308521aa8005da8befe1abaf`. Metrics chi tiết và checkpoint ở thư mục outputs phía trên (không đưa vào Git).
+
+## Làm mới trang phân tích lỗi — 21/10/2026
+
+Trong `app.py`, trang phân tích lỗi được bố trí lại thành phần mở đầu có màu nhấn và lưới hai cột. Mỗi thẻ làm nổi bật nhóm hiện tượng, ID, nhãn gốc và dự đoán của ba encoder; dấu ✓/× cho biết dự đoán có khớp nhãn gốc hay không. Câu tweet được escape trước khi đưa vào HTML. Chỉ đổi cách trình bày các ví dụ test đã chọn; không đổi dữ liệu, nhãn, hoặc dự đoán. Không chạy kiểm tra ứng dụng trong lượt chỉnh giao diện này.
+
+Điều chỉnh tiếp theo theo phản hồi: tăng nhẹ cỡ chữ tiêu đề, nội dung tweet, nhãn và dự đoán trong các thẻ; giữ nguyên bố cục và màu sắc. Không chạy kiểm tra ứng dụng.
+
+Theo phản hồi tiếp theo, tăng thêm cỡ chữ tiêu đề, câu ví dụ, nhãn và kết quả mô hình một nấc; không đổi bố cục. Không chạy kiểm tra ứng dụng.
+
+Tăng cỡ chữ gốc lên 18 px khi trang phân tích lỗi đang mở để phóng đồng đều kiểu chữ toàn trang, gồm điều hướng và nội dung. Không chạy kiểm tra ứng dụng.
+
+Phản hồi sau đó cho thấy cần tăng chữ trên toàn bộ dashboard, không riêng trang phân tích lỗi. Cập nhật cỡ chữ gốc toàn app lên 18 px và đặt nhãn biểu đồ Vega-Lite ở 14 px; không chạy kiểm tra ứng dụng.
+
+Theo phản hồi mới nhất, tăng thêm cỡ chữ cho các trang Báo cáo, So sánh mô hình, Prompt zero-shot và Thử câu; phóng chữ đoạn văn, chú thích, nhãn điều khiển, bảng và biểu đồ. Riêng trang phân tích lỗi giữ cỡ chữ đã duyệt. Không chạy kiểm tra ứng dụng.
+
+## Cải thiện SVM cho câu có ngữ cảnh và guard demo tu từ — 21/10/2026
+
+Câu ví dụ dài do người dùng cung cấp được chạy qua cả năm mô hình hiện có; cả năm dự đoán gốc đều là `0 = sincere`. Không đưa câu này vào dữ liệu huấn luyện. Các prompt zero-shot thử thêm (`incongruent_praise`, `literal_contrast`) không được giữ: chọn prompt và dò ngưỡng chỉ trên shared validation cho Macro-F1 tốt nhất lần lượt `0.5349` và `0.4892`, thấp hơn `explicit_negation` (`0.5603`). Official test không chạy cho các prompt thử.
+
+Đã bổ sung đặc trưng unigram/trigram, character n-gram và các marker ngôn ngữ tổng quát được trích chỉ từ text: sắc thái tích cực/tiêu cực, đối lập cực tính, câu hỏi tu từ và nhấn mạnh. Tìm cấu hình trên shared validation; chọn `C=0.25`, `class_weight=balanced`, `char_weight=1.0`, ngưỡng margin `-0.09319`. Macro-F1 / F1 sarcastic validation: `0.5793 / 0.3647` (SVM cũ đã dò ngưỡng: `0.5571 / 0.3529`). Sau khi khóa cấu hình, fit lại trên official train và chấm official test một lần: Macro-F1 `0.5719`, F1 sarcastic `0.2992`. SVM margin không phải xác suất đã hiệu chỉnh.
+
+SVM mới được lưu thành artifact riêng `outputs/shared_review_20261017/svm_context_20261021.joblib` cùng cấu hình trong `svm_context.json`; không ghi đè `svm.joblib` cũ. Lệnh: `python scripts/tune_svm_features.py --finalize-test`.
+
+Trong demo tương tác, thêm guard chỉ cho cấu trúc tổng quát `who cares ... when ...` khi câu đồng thời có marker cực tính tích cực/tiêu cực. Guard cho câu người dùng kết quả cuối `sarcastic (1)` và hiển thị nhãn gốc `sincere (0)` để phân biệt kết quả mô hình với hiệu chỉnh ngữ cảnh. Không đưa guard vào metric benchmark hoặc prediction CSV. Shared validation có `0` mẫu khớp cấu trúc guard; vì vậy guard chỉ được ghi nhận là xử lý demo cho tình huống ngoài miền, không tuyên bố đã xác nhận tổng quát hóa qua validation.
+
+### Demo import-cache fix — 2026-10-21
+The interactive demo reloads an_y.predict immediately before retrieving its prediction functions. This handles an already-running Streamlit process that had cached the module before apply_rhetorical_context_guard was added. Verified that importlib reload exposes the function and that git diff --check passes; browser interaction was not verified.
+
+## Thử hai câu qua năm bộ phân loại — 25/10/2026
+
+Đã chạy suy luận thật bằng các hàm dự đoán mà trang `Thử câu` gọi, trên checkpoint đang được chọn trong `outputs/team/*/selected_checkpoint.json`, SVM/ngưỡng trong `outputs/shared_review_20261017/svm_context.json`, và prompt đã chọn `explicit_negation`. Chạy với Hugging Face offline để dùng checkpoint có sẵn. Hai câu dưới đây do người viết tự đặt, không thuộc train, shared validation hay official test; nhãn “ý định” là để minh họa, không phải gold label benchmark. Không huấn luyện lại và không tính F1 từ hai câu.
+
+| Lượt | Câu | Ý định minh họa | RoBERTa | BERT | DistilBERT | TF-IDF + SVM | Zero-shot |
+|---|---|---|---:|---:|---:|---:|---:|
+| 1 | `Fantastic, my flight got cancelled again. Exactly what I needed today.` | Mỉa mai | 1 | 1 | 0 | 0 | 0 |
+| 2 | `I had a great time with my friends at dinner.` | Chân thành | 0 | 0 | 0 | 0 | 0 |
+
+Ở lượt 1, margin SVM `-0.108817` thấp hơn ngưỡng `-0.093193`, nên ra 0. Zero-shot chọn `not sarcastic` với NLI score `0.871261`, nên ra 0. Ở lượt 2, SVM margin `-0.122654` thấp hơn cùng ngưỡng và zero-shot chọn `not sarcastic` với NLI score `0.976210`, đều ra 0. Hai điểm của SVM/NLI không phải xác suất đã hiệu chỉnh. Không câu nào kích hoạt context guard của demo.
+
+Lệnh PowerShell để chạy lại từng câu qua đủ năm hàm dự đoán (đổi `$text` sang câu lượt 2 rồi chạy lại các lệnh):
+
+```powershell
+$env:HF_HUB_OFFLINE = "1"
+$env:TRANSFORMERS_OFFLINE = "1"
+$text = "Fantastic, my flight got cancelled again. Exactly what I needed today."
+.\.venv\Scripts\python.exe -m an_y.predict roberta --text $text
+.\.venv\Scripts\python.exe -m an_y.predict bert --text $text
+.\.venv\Scripts\python.exe -m an_y.predict distilbert --text $text
+.\.venv\Scripts\python.exe -m an_y.predict baseline --text $text --output-dir outputs\shared_review_20261017
+.\.venv\Scripts\python.exe -m an_y.predict zero-shot --text $text --output-dir outputs\shared_review_20261017
+```
+
+### Metric benchmark hiện có
+
+Macro-F1 và F1 sarcastic được tính từ dự đoán và nhãn gold trên từng split; F1 sarcastic chỉ tính lớp 1. Encoder là trung bình ± độ lệch chuẩn mẫu qua ba seed; SVM/zero-shot là một cấu hình đã chọn trên validation. Official test vẫn là 1.400 mẫu tách biệt.
+
+| Mô hình/cấu hình | Validation Macro-F1 | Validation F1 sarcastic | Official test Macro-F1 | Official test F1 sarcastic |
+|---|---:|---:|---:|---:|
+| BERT-base | 0.6002 ± 0.0125 | 0.3798 ± 0.0513 | 0.5870 ± 0.0124 | 0.3234 ± 0.0200 |
+| RoBERTa-base | 0.6151 ± 0.0386 | 0.3777 ± 0.0832 | 0.6168 ± 0.0295 | 0.3542 ± 0.0723 |
+| DistilBERT | 0.5597 ± 0.0438 | 0.2752 ± 0.0962 | 0.5717 ± 0.0236 | 0.2631 ± 0.0630 |
+| TF-IDF + SVM, context-enhanced | 0.5793 | 0.3647 | 0.5719 | 0.2992 |
+| Zero-shot, `explicit_negation` (ngưỡng mặc định 0.5) | 0.5488 | 0.2764 | 0.4476 | 0.0428 |
+| Zero-shot, `explicit_negation` (ngưỡng dò validation 0.43) | 0.5603 | 0.3240 | 0.4563 | 0.0793 |
+
+Nguồn số encoder: `results/team/model_comparison.csv`; SVM mới: `outputs/shared_review_20261017/svm_context.json`; zero-shot ngưỡng 0.5: `results/phuc/shared_seed42_20261017/summary.csv`; zero-shot dò ngưỡng 0.43: `outputs/experiments/all_thresholds/metrics.json`. Lý do có hai số zero-shot: so 5 prompt ban đầu dùng ngưỡng mặc định 0.5, sau đó dò ngưỡng riêng trên validation và chọn 0.43. Bản demo dùng 0.43, nhưng dashboard mục Báo cáo vẫn đọc số liệu cũ ở 0.5; mục Prompt zero-shot cũng trình bày bảng so prompt ở bước đầu. Dashboard mục Báo cáo còn đọc SVM cũ (`0.5708 / 0.2826` test), còn mục Thử câu dùng SVM context-enhanced mới đã nêu trên. Giữ riêng từng giai đoạn khi trình bày.
